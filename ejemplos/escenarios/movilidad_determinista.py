@@ -53,7 +53,7 @@ def topology(args):
     net.addLink(sta10, cls=adhoc, intf='sta10-wlan0', ssid='adhocNet', mode='g', channel=5, **kwargs)
 
 
-    # En esta parte se obtiene el movimiento de los nodos a partir de un fichero de marcas de tiempo.
+    # En esta parte se obtiene el movimiento de los nodos a partir de un fichero de marcas de movilidad.
     # net.isReplaying = True
     # path = os.path.dirname(os.path.abspath(__file__)) + '/replayingMobility/escenario2/'
     # get_trace(sta10, '{}node.dat'.format(path), 10)
