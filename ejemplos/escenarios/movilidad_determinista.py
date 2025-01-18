@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 from mininet.log import setLogLevel, info
 from mn_wifi.link import wmediumd, adhoc
 from mn_wifi.cli import CLI
@@ -31,6 +33,7 @@ def topology(args):
 
     info("*** Creating links\n")
     protocols = ['batman_adv', 'olsrd', 'olsrd2']
+    info(args)
     for proto in args:
         if proto in protocols:
             kwargs['proto'] = proto
@@ -49,9 +52,11 @@ def topology(args):
     net.addLink(sta9, cls=adhoc, intf='sta9-wlan0', ssid='adhocNet', mode='g', channel=5, **kwargs)
     net.addLink(sta10, cls=adhoc, intf='sta10-wlan0', ssid='adhocNet', mode='g', channel=5, **kwargs)
 
-    net.isReplaying = True
-    path = os.path.dirname(os.path.abspath(__file__)) + '/replayingMobility/escenario2/'
-    get_trace(sta10, '{}node.dat'.format(path), 10)
+
+    # En esta parte se obtiene el movimiento de los nodos a partir de un fichero de marcas de tiempo.
+    # net.isReplaying = True
+    # path = os.path.dirname(os.path.abspath(__file__)) + '/replayingMobility/escenario2/'
+    # get_trace(sta10, '{}node.dat'.format(path), 10)
 
     if '-p' in args:
         net.plotGraph(max_x=500, max_y=500)
