@@ -38,31 +38,41 @@ def topology(args):
 
     info("*** CONFIGURACION DE TOPOLOGIA\n")
     info("*** Añadiendo nodos a la red\n")
-    sta1 = net.addStation('sta1', ip='10.10.0.1/24', mac='02:00:00:00:65:01', position='300,300,0', **kwargs)
-    sta2 = net.addStation('sta2', ip='10.10.0.2/24', mac='02:00:00:00:65:02', position='370,370,0', **kwargs)
-    sta3 = net.addStation('sta3', ip='10.10.0.3/24', mac='02:00:00:00:65:03', position='440,370,0', **kwargs)
-    sta4 = net.addStation('sta4', ip='10.10.0.4/24', mac='02:00:00:00:65:04', position='510,380,0', **kwargs)
-    sta10 = net.addStation('sta10', ip='10.10.0.10/24', mac='02:00:00:00:65:05', position='500,100,0', **kwargs)
+    sta1 = net.addStation('sta1', ip='10.10.0.1/24', mac='02:00:00:00:65:01', position='0,125,0', **kwargs)
+    sta2 = net.addStation('sta2', ip='10.10.0.2/24', mac='02:00:00:00:65:02', position='400,100,0', **kwargs)
+    sta3 = net.addStation('sta3', ip='10.10.0.3/24', mac='02:00:00:00:65:03', position='450,150,0', **kwargs)
+    sta4 = net.addStation('sta4', ip='10.10.0.4/24', mac='02:00:00:00:65:04', position='500,100,0', **kwargs)
+    sta5 = net.addStation('sta5', ip='10.10.0.5/24', mac='02:00:00:00:65:05', position='550,150,0', **kwargs)
+    sta6 = net.addStation('sta6', ip='10.10.0.6/24', mac='02:00:00:00:65:06', position='600,100,0', **kwargs)
+    sta7 = net.addStation('sta7', ip='10.10.0.7/24', mac='02:00:00:00:65:07', position='650,150,0', **kwargs)
+    sta8 = net.addStation('sta8', ip='10.10.0.8/24', mac='02:00:00:00:65:08', position='700,100,0', **kwargs)
+
+
+
+    
 
     info("*** Configurando nodos Wifi\n")
     net.configureWifiNodes()
 
     info("*** Añadiendo enlaces inalámbricos\n")
-    net.addLink(sta1, cls=adhoc, intf='sta1-wlan0', ssid='adhocNet', mode='g', channel=5, **kwargs)
-    net.addLink(sta2, cls=adhoc, intf='sta2-wlan0', ssid='adhocNet', mode='g', channel=5, **kwargs)
-    net.addLink(sta3, cls=adhoc, intf='sta3-wlan0', ssid='adhocNet', mode='g', channel=5, **kwargs)
-    net.addLink(sta4, cls=adhoc, intf='sta4-wlan0', ssid='adhocNet', mode='g', channel=5, **kwargs)
-    net.addLink(sta10, cls=adhoc, intf='sta10-wlan0', ssid='adhocNet', mode='g', channel=5, **kwargs)
+    net.addLink(sta1, cls=adhoc, intf='sta1-wlan0', ssid='skyNet', mode='g', channel=5, **kwargs)
+    net.addLink(sta2, cls=adhoc, intf='sta2-wlan0', ssid='skyNet', mode='g', channel=5, **kwargs)
+    net.addLink(sta3, cls=adhoc, intf='sta3-wlan0', ssid='skyNet', mode='g', channel=5, **kwargs)
+    net.addLink(sta4, cls=adhoc, intf='sta4-wlan0', ssid='skyNet', mode='g', channel=5, **kwargs)
+    net.addLink(sta5, cls=adhoc, intf='sta5-wlan0', ssid='skyNet', mode='g', channel=5, **kwargs)
+    net.addLink(sta6, cls=adhoc, intf='sta6-wlan0', ssid='skyNet', mode='g', channel=5, **kwargs)
+    net.addLink(sta7, cls=adhoc, intf='sta7-wlan0', ssid='skyNet', mode='g', channel=5, **kwargs)
+    net.addLink(sta8, cls=adhoc, intf='sta8-wlan0', ssid='skyNet', mode='g', channel=5, **kwargs)
 
     info("*** CONFIGURANDO MOVILIDAD\n")
     net.isReplaying = True
     path = os.path.dirname(os.path.abspath(__file__)) + '/replayingMobility/trayectoria/'
-    generar_movilidad(sta10, '{}movilidad_sta10.dat'.format(path))
+    generar_movilidad(sta1, '{}movilidad_sta1.dat'.format(path))
 
 
     if '-p' in args:
         info("*** INICIANDO INTERFAZ GRÁFICA\n")
-        net.plotGraph(max_x=800, max_y=800)
+        net.plotGraph(max_x=1000, max_y=400)
 
 
     info("*** CONSTRUYENDO RED\n")
@@ -109,36 +119,39 @@ def topology(args):
 def generar_movilidad(sta, file_):
     sta.p = []
     sta.time = []
+    altura = 125
+    pasos = 10
     
-    # Posición inicial
-    pos = (250, 700, 0)
+    # Posición inicial (fuera de cobertura)
+    pos = (150, altura, 0)
     tim = 0
     sta.position = pos
     sta.p.append(pos)
     sta.time.append(tim)
-    
-    # Moverse a (250, 300) 4 veces más rápido
-    for y in range(700, 299, -1):
-        pos = (250, y, 0)
-        tim += 0.25  # Asumiendo 0.25 segundos por paso para 4 veces más rápido
+
+    # Moverse hacia (300, 125) hasta conectar solo con sta2
+    for x in range(150, 350, pasos):  # Movimiento en pasos de 5
+        pos = (x, altura, 0)
+        tim += 1  # Un segundo por cada paso
         sta.p.append(pos)
         sta.time.append(tim)
-    
-    # Esperar 30 segundos
-    tim += 30
-    sta.p.append((250, 300, 0))
+
+    # Esperar 120 segundos en (300, 125) conectado solo a sta2
+    tim += 5
+    sta.p.append((350, altura, 0))
     sta.time.append(tim)
-    
-    # Moverse de vuelta a (250, 700)
-    for y in range(300, 701, 1):
-        pos = (250, y, 0)
-        tim += 0.25  # Asumiendo 0.25 segundos por paso para 4 veces más rápido
+
+    # Continuar el movimiento hasta salir del área (más allá de sta8)
+    for x in range(350, 950, pasos):  # Movimiento en pasos de 5
+        pos = (x, altura, 0)
+        tim += 1  # Un segundo por cada paso
         sta.p.append(pos)
         sta.time.append(tim)
-    
-    # Permanecer en (250, 700)
-    sta.p.append((250, 700, 0))
+
+    # Permanecer en la última posición
+    sta.p.append((950, altura, 0))
     sta.time.append(tim)
+
 
 if __name__ == '__main__':
     setLogLevel('info')

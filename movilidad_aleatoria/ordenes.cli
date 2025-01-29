@@ -1,5 +1,12 @@
-sta1 xterm -hold -e "bash -c 'batmand sta1-wlan0 & sleep 2; batmand -c -d 1'" &
-sta2 xterm -hold -e "bash -c 'batmand sta2-wlan0 & sleep 2; batmand -c -d 1'" &
-sta3 xterm -hold -e "bash -c 'batmand sta3-wlan0 & sleep 2; batmand -c -d 1'" &
-sta4 xterm -hold -e "bash -c 'batmand sta4-wlan0 & sleep 2; batmand -c -d 1'" &
-sta10 xterm -hold -e "bash -c 'batmand sta10-wlan0 & sleep 2; batmand -c -d 1'" &
+sta1 batmand sta1-wlan0
+sta2 batmand sta2-wlan0
+sta3 batmand sta3-wlan0
+sta4 batmand sta4-wlan0
+sta5 batmand sta5-wlan0
+
+xterm sta1
+xterm sta2
+xterm sta3
+xterm sta4
+xterm sta
+
