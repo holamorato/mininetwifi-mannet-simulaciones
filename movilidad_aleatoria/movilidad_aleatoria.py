@@ -39,14 +39,14 @@ def topology(args):
 
     info("*** CONFIGURACION DE TOPOLOGIA\n")
     info("*** Añadiendo nodos a la red\n")
-    sta1 = net.addStation('sta1', mac='02:00:00:00:00:01', ip='10.10.0.1', position='0,125,0', privateDirs=['/var/run','/var/log'], **kwargs)
-    sta2 = net.addStation('sta2', mac='02:00:00:00:00:02', ip='10.10.0.2', position='400,100,0', privateDirs=['/var/run','/var/log'], **kwargs)
-    sta3 = net.addStation('sta3', mac='02:00:00:00:00:03', ip='10.10.0.3', position='450,150,0', privateDirs=['/var/run','/var/log'], **kwargs)
-    sta4 = net.addStation('sta4', mac='02:00:00:00:00:04', ip='10.10.0.4', position='500,100,0', privateDirs=['/var/run','/var/log'], **kwargs)
-    sta5 = net.addStation('sta5', mac='02:00:00:00:00:05', ip='10.10.0.5', position='550,150,0', privateDirs=['/var/run','/var/log'], **kwargs)
-    sta6 = net.addStation('sta6', mac='02:00:00:00:00:06', ip='10.10.0.6', position='600,100,0', privateDirs=['/var/run','/var/log'], **kwargs)
-    sta7 = net.addStation('sta7', mac='02:00:00:00:00:07', ip='10.10.0.7', position='650,150,0', privateDirs=['/var/run','/var/log'], **kwargs)
-    sta8 = net.addStation('sta8', mac='02:00:00:00:00:08', ip='10.10.0.8', position='700,100,0', privateDirs=['/var/run','/var/log'], **kwargs)
+    sta1 = net.addStation('sta1', mac='02:00:00:00:00:01', ip='10.10.0.1', position='0,125,0', ipv6='fe80::1', privateDirs=['/var/run','/var/log'], **kwargs)
+    sta2 = net.addStation('sta2', mac='02:00:00:00:00:02', ip='10.10.0.2', position='400,100,0', ipv6='fe80::2', privateDirs=['/var/run','/var/log'], **kwargs)
+    sta3 = net.addStation('sta3', mac='02:00:00:00:00:03', ip='10.10.0.3', position='450,150,0', ipv6='fe80::3', privateDirs=['/var/run','/var/log'], **kwargs)
+    sta4 = net.addStation('sta4', mac='02:00:00:00:00:04', ip='10.10.0.4', position='500,100,0', ipv6='fe80::4', privateDirs=['/var/run','/var/log'], **kwargs)
+    sta5 = net.addStation('sta5', mac='02:00:00:00:00:05', ip='10.10.0.5', position='550,150,0', ipv6='fe80::5', privateDirs=['/var/run','/var/log'], **kwargs)
+    sta6 = net.addStation('sta6', mac='02:00:00:00:00:06', ip='10.10.0.6', position='600,100,0', ipv6='fe80::6', privateDirs=['/var/run','/var/log'], **kwargs)
+    sta7 = net.addStation('sta7', mac='02:00:00:00:00:07', ip='10.10.0.7', position='650,150,0', ipv6='fe80::7', privateDirs=['/var/run','/var/log'], **kwargs)
+    sta8 = net.addStation('sta8', mac='02:00:00:00:00:08', ip='10.10.0.8', position='700,100,0', ipv6='fe80::8', privateDirs=['/var/run','/var/log'], **kwargs)
 
 
     info("*** Configurando nodos Wifi\n")
