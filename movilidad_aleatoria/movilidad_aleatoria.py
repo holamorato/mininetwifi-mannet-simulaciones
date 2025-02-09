@@ -20,7 +20,7 @@ def topology(args):
         if proto in protocols:
             kwargs['proto'] = proto
     if 'proto' not in kwargs:
-        info("*ERROR: No ha elegido un protocolo entre: batman, batman_adv, olsrd, olsrd2\n")
+        info("*ERROR: No ha elegido un protocolo entre: batmand, batman_adv, olsrd, olsrd2\n")
         exit()
 
     # Generación Semilla Aleatoria
