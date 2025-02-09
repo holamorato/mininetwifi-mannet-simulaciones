@@ -14,14 +14,13 @@ import warnings
 def topology(args):
     # Ajustes Iniciales
     warnings.filterwarnings("ignore")
-    num_nodos = 5
     kwargs = {}
-    protocols = ['batman_adv', 'olsrd', 'olsrd2']
+    protocols = ['batmand', 'batman_adv', 'olsrd', 'olsrd2']
     for proto in args:
         if proto in protocols:
             kwargs['proto'] = proto
     if 'proto' not in kwargs:
-        info("*ERROR: No ha elegido un protocolo entre: batman_adv, olsrd, olsrd2\n")
+        info("*ERROR: No ha elegido un protocolo entre: batman, batman_adv, olsrd, olsrd2\n")
         exit()
 
     # Generación Semilla Aleatoria
@@ -30,6 +29,8 @@ def topology(args):
 
     # Creación de las características de la red
     info("*** CREACION DE LA RED\n")
+    info(kwargs)
+    info("\n")
     net = Mininet_wifi(link=wmediumd, wmediumd_mode=interference)
     net.setPropagationModel(model="logDistance", exp=4)
 
@@ -38,18 +39,15 @@ def topology(args):
 
     info("*** CONFIGURACION DE TOPOLOGIA\n")
     info("*** Añadiendo nodos a la red\n")
-    sta1 = net.addStation('sta1', ip='10.10.0.1/24', mac='02:00:00:00:65:01', position='0,125,0', **kwargs)
-    sta2 = net.addStation('sta2', ip='10.10.0.2/24', mac='02:00:00:00:65:02', position='400,100,0', **kwargs)
-    sta3 = net.addStation('sta3', ip='10.10.0.3/24', mac='02:00:00:00:65:03', position='450,150,0', **kwargs)
-    sta4 = net.addStation('sta4', ip='10.10.0.4/24', mac='02:00:00:00:65:04', position='500,100,0', **kwargs)
-    sta5 = net.addStation('sta5', ip='10.10.0.5/24', mac='02:00:00:00:65:05', position='550,150,0', **kwargs)
-    sta6 = net.addStation('sta6', ip='10.10.0.6/24', mac='02:00:00:00:65:06', position='600,100,0', **kwargs)
-    sta7 = net.addStation('sta7', ip='10.10.0.7/24', mac='02:00:00:00:65:07', position='650,150,0', **kwargs)
-    sta8 = net.addStation('sta8', ip='10.10.0.8/24', mac='02:00:00:00:65:08', position='700,100,0', **kwargs)
+    sta1 = net.addStation('sta1', mac='02:00:00:00:00:01', ip='10.10.0.1', position='0,125,0', privateDirs=['/var/run','/var/log'], **kwargs)
+    sta2 = net.addStation('sta2', mac='02:00:00:00:00:02', ip='10.10.0.2', position='400,100,0', privateDirs=['/var/run','/var/log'], **kwargs)
+    sta3 = net.addStation('sta3', mac='02:00:00:00:00:03', ip='10.10.0.3', position='450,150,0', privateDirs=['/var/run','/var/log'], **kwargs)
+    sta4 = net.addStation('sta4', mac='02:00:00:00:00:04', ip='10.10.0.4', position='500,100,0', privateDirs=['/var/run','/var/log'], **kwargs)
+    sta5 = net.addStation('sta5', mac='02:00:00:00:00:05', ip='10.10.0.5', position='550,150,0', privateDirs=['/var/run','/var/log'], **kwargs)
+    sta6 = net.addStation('sta6', mac='02:00:00:00:00:06', ip='10.10.0.6', position='600,100,0', privateDirs=['/var/run','/var/log'], **kwargs)
+    sta7 = net.addStation('sta7', mac='02:00:00:00:00:07', ip='10.10.0.7', position='650,150,0', privateDirs=['/var/run','/var/log'], **kwargs)
+    sta8 = net.addStation('sta8', mac='02:00:00:00:00:08', ip='10.10.0.8', position='700,100,0', privateDirs=['/var/run','/var/log'], **kwargs)
 
-
-
-    
 
     info("*** Configurando nodos Wifi\n")
     net.configureWifiNodes()
@@ -89,6 +87,66 @@ def topology(args):
     net.stop()
 
 
+def generar_movilidad(sta, file_):
+    sta.p = []
+    sta.time = []
+    altura = 125
+    pasos = 10
+    espera = 5
+    
+    # Posición inicial (fuera de cobertura)
+    pos = (150, altura, 0)
+    tim = 0
+    sta.position = pos
+    sta.p.append(pos)
+    sta.time.append(tim)
+
+    # Moverse hasta conectar solo con sta2
+    for x in range(150, 350, pasos):  # Movimiento en pasos de 5
+        pos = (x, altura, 0)
+        tim += 1  # Un segundo por cada paso
+        sta.p.append(pos)
+        sta.time.append(tim)
+
+    # Esperar quieto conectado solo a sta2
+    tim += espera
+    sta.p.append((350, altura, 0))
+    sta.time.append(tim)
+
+    # Moverse hasta conectar solo con sta8
+    for x in range(350, 750, pasos):  # Movimiento en pasos de 5
+        pos = (x, altura, 0)
+        tim += 1  # Un segundo por cada paso
+        sta.p.append(pos)
+        sta.time.append(tim)
+
+    # Esperar quieto conectado solo a sta8
+    tim += espera
+    sta.p.append((750, altura, 0))
+    sta.time.append(tim)
+
+    # Continuar el movimiento hasta salir del área (más allá de sta8)
+    for x in range(750, 950, pasos):  # Movimiento en pasos de 5
+        pos = (x, altura, 0)
+        tim += 1  # Un segundo por cada paso
+        sta.p.append(pos)
+        sta.time.append(tim)
+
+    # Permanecer en la última posición
+    sta.p.append((950, altura, 0))
+    sta.time.append(tim)
+
+
+if __name__ == '__main__':
+    setLogLevel('info')
+    topology(sys.argv)
+
+
+
+
+
+
+
 
 # # FUNCIONES PARA XTERM
 # def start_batmand_xterm(net):
@@ -112,47 +170,3 @@ def topology(args):
 #     """Abre un xterm en cada estación y muestra solo los procesos relacionados con batman."""
 #     for sta in net.stations:
 #         sta.cmd(f'xterm -hold -e "bash -c \'ps aux | grep [b]atman --color=auto; exec bash\'" &')
-
-
-
-
-def generar_movilidad(sta, file_):
-    sta.p = []
-    sta.time = []
-    altura = 125
-    pasos = 10
-    
-    # Posición inicial (fuera de cobertura)
-    pos = (150, altura, 0)
-    tim = 0
-    sta.position = pos
-    sta.p.append(pos)
-    sta.time.append(tim)
-
-    # Moverse hacia (300, 125) hasta conectar solo con sta2
-    for x in range(150, 350, pasos):  # Movimiento en pasos de 5
-        pos = (x, altura, 0)
-        tim += 1  # Un segundo por cada paso
-        sta.p.append(pos)
-        sta.time.append(tim)
-
-    # Esperar 120 segundos en (300, 125) conectado solo a sta2
-    tim += 5
-    sta.p.append((350, altura, 0))
-    sta.time.append(tim)
-
-    # Continuar el movimiento hasta salir del área (más allá de sta8)
-    for x in range(350, 950, pasos):  # Movimiento en pasos de 5
-        pos = (x, altura, 0)
-        tim += 1  # Un segundo por cada paso
-        sta.p.append(pos)
-        sta.time.append(tim)
-
-    # Permanecer en la última posición
-    sta.p.append((950, altura, 0))
-    sta.time.append(tim)
-
-
-if __name__ == '__main__':
-    setLogLevel('info')
-    topology(sys.argv)
