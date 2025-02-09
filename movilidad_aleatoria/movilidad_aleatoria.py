@@ -32,7 +32,7 @@ def topology(args):
     info(kwargs)
     info("\n")
     net = Mininet_wifi(link=wmediumd, wmediumd_mode=interference)
-    net.setPropagationModel(model="logDistance", exp=4)
+    
 
 
     # Configuración de la topología de red
@@ -48,6 +48,8 @@ def topology(args):
     sta7 = net.addStation('sta7', mac='02:00:00:00:00:07', ip='10.10.0.7', position='650,150,0', ipv6='fe80::7', privateDirs=['/var/run','/var/log'], **kwargs)
     sta8 = net.addStation('sta8', mac='02:00:00:00:00:08', ip='10.10.0.8', position='700,100,0', ipv6='fe80::8', privateDirs=['/var/run','/var/log'], **kwargs)
 
+    info("*** Configurando modelo de propagación\n")
+    net.setPropagationModel(model="logDistance", exp=4)
 
     info("*** Configurando nodos Wifi\n")
     net.configureWifiNodes()
