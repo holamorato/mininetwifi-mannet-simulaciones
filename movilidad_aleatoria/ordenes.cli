@@ -3,10 +3,7 @@ sta2 batmand sta2-wlan0
 sta3 batmand sta3-wlan0
 sta4 batmand sta4-wlan0
 sta5 batmand sta5-wlan0
-
-xterm sta1
-xterm sta2
-xterm sta3
-xterm sta4
-xterm sta
+sta6 batmand sta6-wlan0
+sta7 batmand sta7-wlan0
+sta8 batmand sta8-wlan0
 
