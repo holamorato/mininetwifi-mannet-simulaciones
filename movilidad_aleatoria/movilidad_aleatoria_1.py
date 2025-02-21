@@ -116,33 +116,3 @@ def generar_movilidad(sta, file_):
 if __name__ == '__main__':
     setLogLevel('info')
     topology(sys.argv)
-
-
-
-
-
-
-
-
-# # FUNCIONES PARA XTERM
-# def start_batmand_xterm(net):
-#     """Inicia batmand en cada estación y lo muestra en un xterm."""
-#     for sta in net.stations:
-#         sta.cmd(f'xterm -hold -e "bash -c \'batmand {sta.name}-wlan0 & '
-#                 f'sleep 5; ps aux | grep batman --color=auto; '
-#                 f'batmand -c -d 1; exec bash\'" &')
-
-# def show_ifconfig_xterm(net):
-#     """Abre un xterm en cada estación y muestra ifconfig."""
-#     for sta in net.stations:
-#         sta.cmd(f'xterm -hold -e "bash -c \'ifconfig; exec bash\'" &')
-
-# def show_processes_xterm(net):
-#     """Abre un xterm en cada estación y muestra los procesos en entorno de usuario."""
-#     for sta in net.stations:
-#         sta.cmd(f'xterm -hold -e "bash -c \'ps aux; exec bash\'" &')
-
-# def show_batman_processes_xterm(net):
-#     """Abre un xterm en cada estación y muestra solo los procesos relacionados con batman."""
-#     for sta in net.stations:
-#         sta.cmd(f'xterm -hold -e "bash -c \'ps aux | grep [b]atman --color=auto; exec bash\'" &')
