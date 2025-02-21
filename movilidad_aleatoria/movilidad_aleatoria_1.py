@@ -98,7 +98,7 @@ def generar_movilidad(sta, file_):
     
     # Posición inicial (fuera de cobertura)
     pos = (150, altura, 0)
-    tim = 10
+    tim = 60
     sta.position = pos
     sta.p.append(pos)
     sta.time.append(tim)
@@ -110,33 +110,7 @@ def generar_movilidad(sta, file_):
         sta.p.append(pos)
         sta.time.append(tim)
 
-    # Esperar quieto conectado solo a sta2
-    tim += espera
-    sta.p.append((350, altura, 0))
-    sta.time.append(tim)
-
-    # Moverse hasta conectar solo con sta8
-    for x in range(350, 750, pasos):  # Movimiento en pasos de 5
-        pos = (x, altura, 0)
-        tim += 1  # Un segundo por cada paso
-        sta.p.append(pos)
-        sta.time.append(tim)
-
-    # Esperar quieto conectado solo a sta8
-    tim += espera
-    sta.p.append((750, altura, 0))
-    sta.time.append(tim)
-
-    # Continuar el movimiento hasta salir del área (más allá de sta8)
-    for x in range(750, 950, pasos):  # Movimiento en pasos de 5
-        pos = (x, altura, 0)
-        tim += 1  # Un segundo por cada paso
-        sta.p.append(pos)
-        sta.time.append(tim)
-
-    # Permanecer en la última posición
-    sta.p.append((950, altura, 0))
-    sta.time.append(tim)
+    
 
 
 if __name__ == '__main__':
