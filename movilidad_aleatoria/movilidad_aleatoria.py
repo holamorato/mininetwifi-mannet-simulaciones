@@ -11,6 +11,8 @@ import sys
 import os
 import warnings
 
+from movilidad import *
+
 def topology(args):
     # Ajustes Iniciales
     warnings.filterwarnings("ignore")
@@ -67,7 +69,7 @@ def topology(args):
     info("*** CONFIGURANDO MOVILIDAD\n")
     net.isReplaying = True
     path = os.path.dirname(os.path.abspath(__file__)) + '/replayingMobility/trayectoria/'
-    generar_movilidad(sta1, '{}movilidad_sta1.dat'.format(path))
+    generar_movilidad_1(sta1, '{}movilidad_sta1.dat'.format(path))
 
 
     if '-p' in args:
@@ -89,7 +91,7 @@ def topology(args):
     net.stop()
 
 
-def generar_movilidad(sta, file_):
+def generar_movilidad_1(sta, file_):
     sta.p = []
     sta.time = []
     altura = 125
