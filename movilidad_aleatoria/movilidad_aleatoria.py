@@ -11,8 +11,6 @@ import sys
 import os
 import warnings
 
-from movilidad import *
-
 def topology(args):
     # Ajustes Iniciales
     warnings.filterwarnings("ignore")
