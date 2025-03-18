@@ -17,8 +17,15 @@ def parse_args():
 def process_packets(args):
     packets = []
     with PcapNgReader(args.pcapng) as pcap:
-        for pkt in pcap:
-            packets.append(pkt)
+        try:
+            for pkt in pcap:
+                packets.append(pkt)
+                # Mensaje de progreso cada 1000 paquetes
+                if len(packets) % 1000 == 0:
+                    print(f"Procesados {len(packets)} paquetes...")
+        except KeyboardInterrupt:
+            print("\nInterrupción manual. Deteniendo...")
+            return packets
     return packets
 
 def extract_data(args, packets):
