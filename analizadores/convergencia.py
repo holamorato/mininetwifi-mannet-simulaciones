@@ -4,28 +4,32 @@ from scapy.layers.l2 import Ether
 from scapy.layers.inet import UDP, IP
 import matplotlib.pyplot as plt
 import argparse
+from scapy import config
+
+# Optimización: Desactivar chequeo de capas
+config.conf.dot11_ack = False
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Calcula tiempo de convergencia para B.A.T.M.A.N. en .pcapng')
     parser.add_argument('--protocol', type=str, required=True, choices=['batmand', 'batman-adv'], 
                        help='Protocolo a analizar (batmand o batman-adv)')
     parser.add_argument('--pcapng', type=str, required=True, help='Ruta del archivo .pcapng')
-    parser.add_argument('--sta1_mac', type=str, default='00:00:00:00:00:01', help='MAC de sta1')
-    parser.add_argument('--sta20_mac', type=str, default='00:00:00:00:00:14', help='MAC de sta20')
+    parser.add_argument('--sta1_mac', type=str, default='02:00:00:00:00:01', help='MAC de sta1')
+    parser.add_argument('--sta20_mac', type=str, default='02:00:00:00:00:14', help='MAC de sta20')
     return parser.parse_args()
 
 def process_packets(args):
     packets = []
-    with PcapNgReader(args.pcapng) as pcap:
-        try:
+    try:
+        with PcapNgReader(args.pcapng) as pcap:
+            packet_count = 0
             for pkt in pcap:
                 packets.append(pkt)
-                # Mensaje de progreso cada 1000 paquetes
-                if len(packets) % 1000 == 0:
-                    print(f"Procesados {len(packets)} paquetes...")
-        except KeyboardInterrupt:
-            print("\nInterrupción manual. Deteniendo...")
-            return packets
+                packet_count += 1
+                if packet_count % 1000 == 0:
+                    print(f"Paquetes procesados: {packet_count}")
+    except KeyboardInterrupt:
+        print("\nLectura interrumpida por el usuario.")
     return packets
 
 def extract_data(args, packets):
