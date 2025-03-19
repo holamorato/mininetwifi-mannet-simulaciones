@@ -37,62 +37,63 @@ def process_packets(args):
 def extract_data(args, packets):
     assoc_times = {}
     ogm_data = {}
+    
+    # Normalizar MACs
+    sta1_mac = args.sta1_mac.lower().replace('-', ':')
+    sta20_mac = args.sta20_mac.lower().replace('-', ':')
 
     for pkt in packets:
-        if Dot11 in pkt and pkt[Dot11].type == 0 and pkt[Dot11].subtype in [0, 1]:
-            if pkt[Dot11].addr2 == args.sta1_mac or pkt[Dot11].addr1 == args.sta1_mac:
-                assoc_time = pkt.time
-                ap_mac = pkt[Dot11].addr3
-                assoc_times[ap_mac] = assoc_time
+        # *** Cambio 1: Eliminar detección de asociación (no hay tramas en hwsim0) ***
         
+        # *** Cambio 2: Ajustar filtros para batmand (puerto 4305) ***
         if args.protocol == 'batmand':
-            if UDP in pkt and pkt[UDP].dport == 1966 and IP in pkt:
+            if UDP in pkt and pkt[UDP].dport == 4305 and IP in pkt:  # Puerto corregido
                 seqno = pkt[UDP].sport
                 ip_src = pkt[IP].src
                 if seqno not in ogm_data:
                     ogm_data[seqno] = {}
                 ogm_data[seqno][ip_src] = pkt.time
         
+        # *** Cambio 3: Procesar batman-adv en capa Ethernet ***
         elif args.protocol == 'batman-adv':
-            if Dot11 in pkt and pkt[Dot11].type == 2:
-                raw_payload = bytes(pkt[Dot11].payload)
-                if len(raw_payload) >= 8 and raw_payload[:6] == b'\xaa\xaa\x03\x00\x00\x43':
-                    originator_mac = raw_payload[6:12].hex(':')
-                    seqno = int.from_bytes(raw_payload[14:16], byteorder='little')
-                    forwarder_mac = pkt[Dot11].addr2
-                    key = (originator_mac, seqno)
-                    if key not in ogm_data:
-                        ogm_data[key] = {}
-                    ogm_data[key][forwarder_mac] = pkt.time
+            if Ether in pkt and pkt[Ether].type == 0x4305:
+                raw_payload = bytes(pkt[Ether].payload)
+                if len(raw_payload) >= 16:
+                    try:
+                        originator_mac = raw_payload[6:12].hex(':')  # Offset corregido
+                        seqno = int.from_bytes(raw_payload[14:16], byteorder='little')
+                        forwarder_mac = pkt[Ether].src
+                        key = (originator_mac, seqno)
+                        if key not in ogm_data:
+                            ogm_data[key] = {}
+                        ogm_data[key][forwarder_mac] = pkt.time
+                    except:
+                        continue
 
     return assoc_times, ogm_data
 
 def calculate_convergence(args, assoc_times, ogm_data):
     conv_times = []
+    sta1_mac = args.sta1_mac.lower().replace('-', ':')
     
-    for ap_mac, t_assoc in assoc_times.items():
-        if args.protocol == 'batmand':
-            seqnos = [seqno for seqno in ogm_data if args.sta1_mac in ogm_data[seqno]]
-            if not seqnos:
-                continue
+    # *** Cambio 4: Calcular desde el primer OGM (sin eventos de asociación) ***
+    if args.protocol == 'batmand':
+        seqnos = list(ogm_data.keys())
+        if seqnos:
             first_seqno = min(seqnos)
             if args.sta20_mac in ogm_data[first_seqno]:
-                t_conv = ogm_data[first_seqno][args.sta20_mac] - t_assoc
-                conv_times.append((t_assoc, t_conv))
-        
-        elif args.protocol == 'batman-adv':
-            sta1_ogms = []
-            for key in ogm_data:
-                orig_mac, seqno = key
-                if orig_mac == args.sta1_mac:
-                    # Corrección aquí: 3 paréntesis al final
-                    sta1_ogms.append((seqno, min(ogm_data[key].values())))  # <--- ¡Corregido!
-            if not sta1_ogms:
-                continue
-            first_seqno, t_first_ogm = min(sta1_ogms, key=lambda x: x[1])
-            if args.sta20_mac in ogm_data[(args.sta1_mac, first_seqno)]:
-                t_conv = ogm_data[(args.sta1_mac, first_seqno)][args.sta20_mac] - t_assoc
-                conv_times.append((t_assoc, t_conv))
+                t_start = min(ogm_data[first_seqno].values())
+                t_end = ogm_data[first_seqno][args.sta20_mac]
+                conv_times.append((t_start, t_end - t_start))
+    
+    elif args.protocol == 'batman-adv':
+        sta1_ogms = [k for k in ogm_data if k[0] == sta1_mac]
+        if sta1_ogms:
+            first_seqno = min(sta1_ogms, key=lambda x: x[1])
+            if args.sta20_mac in ogm_data[first_seqno]:
+                t_start = min(ogm_data[first_seqno].values())
+                t_end = ogm_data[first_seqno][args.sta20_mac]
+                conv_times.append((t_start, t_end - t_start))
     
     return conv_times
 
