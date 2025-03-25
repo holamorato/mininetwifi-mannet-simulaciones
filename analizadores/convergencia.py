@@ -1,57 +1,55 @@
-from scapy.all import *
-from scapy.packet import Packet, bind_layers
-from scapy.fields import *
 import argparse
+from scapy.all import *
+from scapy.layers.inet import UDP
 
-# 1. Definir la estructura del OGM de BATMAN
-class BATMAN_OGM(Packet):
-    name = "BATMAN_OGM"
-    fields_desc = [
-        ByteField("version", 5),          # Versión 5 (según tu captura)
-        ByteField("flags", 0),            # Flags (0x00 en tu ejemplo)
-        ByteField("ttl", 0),              # TTL (47 y 48 en tu captura)
-        ByteField("gw_flags", 0),         # Gateway Flags (0x00)
-        IntField("seqno", 0),             # Seqno (30 en tu captura)
-        ShortField("gw_port", 4305),      # Puerto Gateway (4306)
-        IPField("orig_addr", "0.0.0.0"),  # Originador (ej: 10.0.0.12)
-        IPField("recv_addr", "0.0.0.0"),  # Recibido de (ej: 10.0.0.10)
-        ByteField("tq", 0),               # Calidad (73 y 114 en tu captura)
-        ByteField("hna_len", 0)           # Número de HNAs (0)
-    ]
-
-# 2. Asociar BATMAN_OGM al puerto UDP 4305
-bind_layers(UDP, BATMAN_OGM, dport=4305)
-bind_layers(UDP, BATMAN_OGM, sport=4305)
-
-def parse_args():
-    parser = argparse.ArgumentParser(description='Analizar OGMs de B.A.T.M.A.N.')
-    parser.add_argument('--pcapng', type=str, required=True, help='Ruta del archivo .pcapng')
-    return parser.parse_args()
-
-def analyze_packets(args):
-    ogms = []
-    packets = rdpcap(args.pcapng)
+def parse_ogm(ogm_data):
+    """Analiza los datos binarios de un paquete OGM B.A.T.M.A.N"""
+    if len(ogm_data) < 20:
+        return None  # Longitud mínima asumida para OGM
     
-    for pkt in packets:
-        # 3. Buscar paquetes UDP/4305 con capa BATMAN_OGM
-        if pkt.haslayer(UDP) and (pkt[UDP].dport == 4305 or pkt[UDP].sport == 4305):
-            if pkt.haslayer(BATMAN_OGM):
-                ogm = pkt[BATMAN_OGM]
-                ogms.append({
-                    'seqno': ogm.seqno,
-                    'originator': ogm.orig_addr,
-                    'tq': ogm.tq,
-                    'timestamp': pkt.time
-                })
-                print(f"OGM detectado: Seq={ogm.seqno} | Origen={ogm.orig_addr} | TQ={ogm.tq}")
+    parsed = {
+        'version': ogm_data[0],
+        'flags': ogm_data[1],
+        'sequence_number': int.from_bytes(ogm_data[4:8], byteorder='big'),
+        'originator': ':'.join(f'{b:02x}' for b in ogm_data[8:14]),
+        'raw_hex': ogm_data.hex(),
+        'raw_data': ogm_data
+    }
+    return parsed
+
+def process_pcap(file_path):
+    """Procesa el archivo pcapng y encuentra el primer OGM"""
+    reader = PcapNgReader(file_path)
+    for pkt in reader:
+        if UDP in pkt and pkt[UDP].dport == 4305:
+            udp_payload = bytes(pkt[UDP].payload)
+            if not udp_payload:
+                continue
+            
+            # Extraer primer OGM (asumiendo que ocupa todo el payload)
+            ogm = parse_ogm(udp_payload)
+            if ogm:
+                reader.close()
+                return ogm
+    reader.close()
+    return None
+
+def main():
+    parser = argparse.ArgumentParser(description='Analizador de OGM B.A.T.M.A.N')
+    parser.add_argument('--archivo', required=True, help='Ruta al archivo .pcapng')
+    args = parser.parse_args()
+
+    ogm = process_pcap(args.archivo)
     
-    print(f"\nResumen:")
-    print(f"- Paquetes procesados: {len(packets)}")
-    print(f"- OGMs detectados: {len(ogms)}")
-    if ogms:
-        print("\nEjemplo:")
-        print(f"Primer OGM: Seq={ogms[0]['seqno']} | Origen={ogms[0]['originator']}")
+    if ogm:
+        print("[+] Primer OGM encontrado:")
+        print(f"Versión: {ogm['version']}")
+        print(f"Flags: 0x{ogm['flags']:02x}")
+        print(f"Número de secuencia: {ogm['sequence_number']}")
+        print(f"Originator: {ogm['originator']}")
+        print(f"Raw data (hex): {ogm['raw_hex']}")
+    else:
+        print("[-] No se encontraron paquetes OGM B.A.T.M.A.N")
 
 if __name__ == '__main__':
-    args = parse_args()
-    analyze_packets(args)
+    main()
