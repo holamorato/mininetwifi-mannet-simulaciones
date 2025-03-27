@@ -1,6 +1,8 @@
 import argparse
+import matplotlib.pyplot as plt
 from scapy.all import *
 from scapy.layers.inet import UDP
+from collections import defaultdict
 
 class BATMAN_OGM(Packet):
     name = "BATMAN OGM v5"
@@ -15,45 +17,73 @@ class BATMAN_OGM(Packet):
         IPField("received_from", "0.0.0.0"),
         ByteField("tx_quality", 0),
         ByteField("hna_count", 0)
-    ]  # 18 bytes total
+    ]
 
 bind_layers(UDP, BATMAN_OGM, dport=4305)
 
-def process_packet(payload):
-    """Procesa todos los OGMs de 18 bytes en el payload"""
-    ogm_size = 18
-    return [BATMAN_OGM(payload[i:i+ogm_size]) for i in range(0, len(payload), ogm_size) 
-            if len(payload[i:i+ogm_size]) == ogm_size]
+def analyze_convergence(pcap_file, target_ip="10.0.0.20"):
+    convergence_data = []
+    current_best = None
+    last_change_time = None
+    route_history = defaultdict(list)
+    
+    with PcapNgReader(pcap_file) as pcap:
+        for pkt in pcap:
+            if UDP in pkt and BATMAN_OGM in pkt:
+                ogm = pkt[BATMAN_OGM]
+                timestamp = float(pkt.time)
+                
+                # Solo consideramos OGMs que contienen información sobre el target
+                if ogm.originator == target_ip or target_ip in [ogm.originator, ogm.received_from]:
+                    route_info = {
+                        'timestamp': timestamp,
+                        'originator': ogm.originator,
+                        'sequence': ogm.sequence,
+                        'tx_quality': ogm.tx_quality
+                    }
+                    
+                    # Actualizamos la mejor ruta
+                    if not current_best or ogm.sequence > current_best['sequence']:
+                        if current_best and ogm.originator != current_best['originator']:
+                            # Registramos el tiempo de convergencia
+                            convergence_time = timestamp - last_change_time
+                            convergence_data.append((timestamp, convergence_time))
+                        
+                        current_best = {
+                            'originator': ogm.originator,
+                            'sequence': ogm.sequence,
+                            'start_time': timestamp
+                        }
+                        last_change_time = timestamp
+                    
+                    route_history[timestamp].append(route_info)
+
+    return convergence_data
+
+def plot_convergence(convergence_data, output_file="convergence_plot.png"):
+    times = [entry[0] for entry in convergence_data]
+    durations = [entry[1] for entry in convergence_data]
+
+    plt.figure(figsize=(15, 6))
+    plt.bar(times, durations, width=0.8, align='center')
+    plt.title('Tiempo de Convergencia hacia sta20 (10.0.0.20)')
+    plt.xlabel('Tiempo de simulación (segundos)')
+    plt.ylabel('Tiempo de convergencia (segundos)')
+    plt.grid(True, which='both', linestyle='--', linewidth=0.5)
+    plt.savefig(output_file, dpi=300, bbox_inches='tight')
+    print(f"Gráfica guardada como: {output_file}")
 
 def main():
-    parser = argparse.ArgumentParser(description="Analizador completo de paquetes BATMAN")
-    parser.add_argument("--archivo", required=True)
+    parser = argparse.ArgumentParser(description="Analizador de convergencia BATMAN")
+    parser.add_argument("--archivo", required=True, help="Archivo .pcapng de captura")
     args = parser.parse_args()
+
+    convergence_data = analyze_convergence(args.archivo)
     
-    results = []
-    
-    with PcapNgReader(args.archivo) as pcap:
-        for pkt_num, pkt in enumerate(pcap, 1):
-            if UDP in pkt and pkt[UDP].dport == 4305:
-                payload = bytes(pkt[UDP].payload)
-                ogms = process_packet(payload)
-                results.append((pkt_num, len(payload), ogms))
-    
-    print(f"=== Resultados ({len(results)} paquetes procesados) ===")
-    for pkt_num, pkt_len, ogms in results:
-        print(f"\n[Paquete {pkt_num}] Bytes: {pkt_len}")
-        print(f"OGMs detectados: {len(ogms)}")
-        
-        for ogm_num, ogm in enumerate(ogms, 1):
-            print(f"\n  OGM {ogm_num}:")
-            print(f"    Versión: {ogm.version}")
-            print(f"    TTL: {ogm.ttl}")
-            print(f"    Originator: {ogm.originator}")
-            print(f"    Recibido de: {ogm.received_from}")
-            print(f"    Secuencia: {ogm.sequence}")
-            print(f"    Calidad TX: {ogm.tx_quality}")
-            print(f"    HNAs: {ogm.hna_count}")
-        print("═" * 60)
+    if convergence_data:
+        plot_convergence(convergence_data)
+    else:
+        print("No se detectaron eventos de convergencia")
 
 if __name__ == "__main__":
     main()
