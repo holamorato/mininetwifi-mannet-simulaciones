@@ -26,27 +26,22 @@ def process_packet(payload):
             if len(payload[i:i+ogm_size]) == ogm_size]
 
 def main():
-    parser = argparse.ArgumentParser(description="Analizador de primeros 10 paquetes BATMAN")
+    parser = argparse.ArgumentParser(description="Analizador completo de paquetes BATMAN")
     parser.add_argument("--archivo", required=True)
     args = parser.parse_args()
     
-    packet_count = 0
     results = []
     
     with PcapNgReader(args.archivo) as pcap:
-        for pkt in pcap:
+        for pkt_num, pkt in enumerate(pcap, 1):
             if UDP in pkt and pkt[UDP].dport == 4305:
-                packet_count += 1
                 payload = bytes(pkt[UDP].payload)
                 ogms = process_packet(payload)
-                results.append((packet_count, pkt.time , len(payload), ogms))
-                
-                if packet_count >= 10:
-                    break
+                results.append((pkt_num, len(payload), ogms))
     
     print(f"=== Resultados ({len(results)} paquetes procesados) ===")
-    for pkt_num, timestamp, pkt_len, ogms in results:
-        print(f"\n[Paquete {pkt_num}] Tiempo: {timestamp:.6f} | Bytes: {pkt_len}")
+    for pkt_num, pkt_len, ogms in results:
+        print(f"\n[Paquete {pkt_num}] Bytes: {pkt_len}")
         print(f"OGMs detectados: {len(ogms)}")
         
         for ogm_num, ogm in enumerate(ogms, 1):
