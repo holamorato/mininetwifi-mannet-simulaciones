@@ -21,11 +21,10 @@ class BATMAN_OGM(Packet):
 
 bind_layers(UDP, BATMAN_OGM, dport=4305)
 
-def analyze_convergence(pcap_file, target_ip="10.0.0.20"):
+def analyze_convergence(pcap_file, mobile_node="10.0.0.1"):
     convergence_data = []
     current_best = None
     last_change_time = None
-    route_history = defaultdict(list)
     
     with PcapNgReader(pcap_file) as pcap:
         for pkt in pcap:
@@ -33,31 +32,23 @@ def analyze_convergence(pcap_file, target_ip="10.0.0.20"):
                 ogm = pkt[BATMAN_OGM]
                 timestamp = float(pkt.time)
                 
-                # Solo consideramos OGMs que contienen información sobre el target
-                if ogm.originator == target_ip or target_ip in [ogm.originator, ogm.received_from]:
-                    route_info = {
-                        'timestamp': timestamp,
-                        'originator': ogm.originator,
-                        'sequence': ogm.sequence,
-                        'tx_quality': ogm.tx_quality
-                    }
+                # Solo OGMs del nodo móvil (STA1)
+                if ogm.originator == mobile_node:
+                    print(f"[DEBUG] OGM detectado: {ogm.originator} -> Seq {ogm.sequence}")
                     
-                    # Actualizamos la mejor ruta
-                    if not current_best or ogm.sequence > current_best['sequence']:
-                        if current_best and ogm.originator != current_best['originator']:
-                            # Registramos el tiempo de convergencia
+                    # Actualizar mejor ruta
+                    if not current_best or ogm.sequence > current_best["sequence"]:
+                        if current_best:
                             convergence_time = timestamp - last_change_time
                             convergence_data.append((timestamp, convergence_time))
+                            print(f"[DEBUG] Cambio detectado: Tiempo {convergence_time:.2f}s")
                         
                         current_best = {
-                            'originator': ogm.originator,
-                            'sequence': ogm.sequence,
-                            'start_time': timestamp
+                            "sequence": ogm.sequence,
+                            "start_time": timestamp
                         }
                         last_change_time = timestamp
-                    
-                    route_history[timestamp].append(route_info)
-
+    
     return convergence_data
 
 def plot_convergence(convergence_data, output_file="convergence_plot.png"):
