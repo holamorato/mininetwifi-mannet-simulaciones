@@ -122,7 +122,7 @@ def generar_movilidad(sta, file_):
     
     # Posición inicial (fuera de cobertura)
     pos = (150, altura, 0)
-    tim = 10
+    tim = 240
     sta.position = pos
     sta.p.append(pos)
     sta.time.append(tim)
