@@ -118,11 +118,11 @@ def generar_movilidad(sta, file_):
     sta.time = []
     altura = 125
     pasos = 10
-    espera = 5
+    espera = 60
     
     # Posición inicial (fuera de cobertura)
     pos = (150, altura, 0)
-    tim = 10
+    tim = espera*3
     sta.position = pos
     sta.p.append(pos)
     sta.time.append(tim)
