@@ -128,7 +128,7 @@ def generar_movilidad(sta, file_):
     sta.time.append(tim)
 
     # Moverse hasta conectar solo con sta2
-    for x in range(150, 350, pasos):  # Movimiento en pasos de 5
+    for x in range(150, 350, pasos):  # Movimiento en pasos de 10
         pos = (x, altura, 0)
         tim += 1  # Un segundo por cada paso
         sta.p.append(pos)
@@ -139,27 +139,39 @@ def generar_movilidad(sta, file_):
     sta.p.append((350, altura, 0))
     sta.time.append(tim)
 
-    # Moverse hasta conectar solo con sta8
-    for x in range(350, 750, pasos):  # Movimiento en pasos de 5
+    # Moverse hasta conectar solo con sta10
+    for x in range(350, 850, pasos):  # Movimiento en pasos de 10
         pos = (x, altura, 0)
         tim += 1  # Un segundo por cada paso
         sta.p.append(pos)
         sta.time.append(tim)
 
-    # Esperar quieto conectado solo a sta8
+    # Esperar quieto conectado solo a sta10
     tim += espera
-    sta.p.append((750, altura, 0))
+    sta.p.append((850, altura, 0))
     sta.time.append(tim)
 
-    # Continuar el movimiento hasta salir del área (más allá de sta8)
-    for x in range(750, 950, pasos):  # Movimiento en pasos de 5
+    # Moverse hasta conectar solo con sta20
+    for x in range(850, 1350, pasos):  # Movimiento en pasos de 10
+        pos = (x, altura, 0)
+        tim += 1  # Un segundo por cada paso
+        sta.p.append(pos)
+        sta.time.append(tim)
+
+    # Esperar quieto conectado solo a sta20
+    tim += espera
+    sta.p.append((1350, altura, 0))
+    sta.time.append(tim)
+
+    # Continuar el movimiento hasta salir del área (más allá de sta20)
+    for x in range(1300, 1550, pasos):  # Movimiento en pasos de 10
         pos = (x, altura, 0)
         tim += 1  # Un segundo por cada paso
         sta.p.append(pos)
         sta.time.append(tim)
 
     # Permanecer en la última posición
-    sta.p.append((950, altura, 0))
+    sta.p.append((1550, altura, 0))
     sta.time.append(tim)
 
     
