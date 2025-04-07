@@ -164,7 +164,7 @@ def generar_movilidad(sta, file_):
     sta.time.append(tim)
 
     # Continuar el movimiento hasta salir del área (más allá de sta20)
-    for x in range(1300, 1550, pasos):  # Movimiento en pasos de 10
+    for x in range(1350, 1550, pasos):  # Movimiento en pasos de 10
         pos = (x, altura, 0)
         tim += 1  # Un segundo por cada paso
         sta.p.append(pos)
