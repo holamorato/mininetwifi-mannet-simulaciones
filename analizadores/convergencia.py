@@ -1,54 +1,28 @@
+#!/usr/bin/env python3
 import argparse
 import matplotlib.pyplot as plt
 from scapy.all import *
-from scapy.layers.inet import UDP
-from collections import defaultdict
-
-class BATMAN_OGM(Packet):
-    name = "BATMAN OGM v5"
-    fields_desc = [
-        ByteField("version", 5),
-        ByteField("flags", 0),
-        ByteField("ttl", 0),
-        ByteField("gw_flags", 0),
-        ShortField("sequence", 0),
-        ShortField("gw_port", 4305),
-        IPField("originator", "0.0.0.0"),
-        IPField("received_from", "0.0.0.0"),
-        ByteField("tx_quality", 0),
-        ByteField("hna_count", 0)
-    ]
-
-bind_layers(UDP, BATMAN_OGM, dport=4305)
+from scapy.layers.inet import ICMP
 
 def analyze_convergence(pcap_file, mobile_node="10.0.0.1"):
     convergence_data = []
-    current_best = None
-    last_change_time = None
-    
+    last_reply_time = None
+
     with PcapNgReader(pcap_file) as pcap:
         for pkt in pcap:
-            if UDP in pkt and BATMAN_OGM in pkt:
-                ogm = pkt[BATMAN_OGM]
+            if ICMP in pkt and IP in pkt:
+                icmp = pkt[ICMP]
                 timestamp = float(pkt.time)
-                
-                # Solo OGMs del nodo móvil (STA1)
-                if ogm.originator == mobile_node:
-                    print(f"[DEBUG] OGM detectado: {ogm.originator} -> Seq {ogm.sequence}")
-                    
-                    # Actualizar mejor ruta
-                    if not current_best or ogm.sequence > current_best["sequence"]:
-                        if current_best:
-                            convergence_time = timestamp - last_change_time
-                            convergence_data.append((timestamp, convergence_time))
-                            print(f"[DEBUG] Cambio detectado: Tiempo {convergence_time:.2f}s")
-                        
-                        current_best = {
-                            "sequence": ogm.sequence,
-                            "start_time": timestamp
-                        }
-                        last_change_time = timestamp
-    
+
+                # Solo analizar paquetes ICMP Reply provenientes del nodo móvil
+                if pkt[IP].dst == mobile_node and icmp.type == 0:  # ICMP Echo Reply
+                    if last_reply_time is not None:
+                        time_between_replies = timestamp - last_reply_time
+                        convergence_data.append((timestamp, time_between_replies))
+                        print(f"[DEBUG] Tiempo entre Echo Reply: {time_between_replies:.2f}s")
+
+                    last_reply_time = timestamp
+
     return convergence_data
 
 def plot_convergence(convergence_data, output_file="convergence_plot.png"):
@@ -57,7 +31,7 @@ def plot_convergence(convergence_data, output_file="convergence_plot.png"):
 
     plt.figure(figsize=(15, 6))
     plt.bar(times, durations, width=0.8, align='center')
-    plt.title('Tiempo de Convergencia hacia sta20 (10.0.0.20)')
+    plt.title('Tiempo de Convergencia ICMP (Ping)')
     plt.xlabel('Tiempo de simulación (segundos)')
     plt.ylabel('Tiempo de convergencia (segundos)')
     plt.grid(True, which='both', linestyle='--', linewidth=0.5)
@@ -65,7 +39,7 @@ def plot_convergence(convergence_data, output_file="convergence_plot.png"):
     print(f"Gráfica guardada como: {output_file}")
 
 def main():
-    parser = argparse.ArgumentParser(description="Analizador de convergencia BATMAN")
+    parser = argparse.ArgumentParser(description="Analizador de convergencia ICMP")
     parser.add_argument("--archivo", required=True, help="Archivo .pcapng de captura")
     args = parser.parse_args()
 
