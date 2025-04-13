@@ -59,6 +59,8 @@ def topology(args):
     sta18 = net.addStation('sta18', mac='02:00:00:00:00:12', ip='10.0.0.18', position='1200,100,0', ipv6='fe80::18', privateDirs=['/var/run','/var/log'], **kwargs)
     sta19 = net.addStation('sta19', mac='02:00:00:00:00:13', ip='10.0.0.19', position='1250,150,0', ipv6='fe80::19', privateDirs=['/var/run','/var/log'], **kwargs)
     sta20 = net.addStation('sta20', mac='02:00:00:00:00:14', ip='10.0.0.20', position='1300,100,0', ipv6='fe80::20', privateDirs=['/var/run','/var/log'], **kwargs)
+    sta21 = net.addStation('sta21', mac='02:00:00:00:00:15', ip='10.0.0.21', position='1350,150,0', ipv6='fe80::21', privateDirs=['/var/run','/var/log'], **kwargs)
+    sta22 = net.addStation('sta22', mac='02:00:00:00:00:16', ip='10.0.0.22', position='1400,100,0', ipv6='fe80::22', privateDirs=['/var/run','/var/log'], **kwargs)
 
     info("*** Configurando modelo de propagación\n")
     net.setPropagationModel(model="logDistance", exp=4)
@@ -87,6 +89,8 @@ def topology(args):
     net.addLink(sta18, cls=adhoc, intf='sta18-wlan0', ssid='skyNet', mode='g', channel=5, **kwargs)
     net.addLink(sta19, cls=adhoc, intf='sta19-wlan0', ssid='skyNet', mode='g', channel=5, **kwargs)
     net.addLink(sta20, cls=adhoc, intf='sta20-wlan0', ssid='skyNet', mode='g', channel=5, **kwargs)
+    net.addLink(sta21, cls=adhoc, intf='sta21-wlan0', ssid='skyNet', mode='g', channel=5, **kwargs)
+    net.addLink(sta22, cls=adhoc, intf='sta22-wlan0', ssid='skyNet', mode='g', channel=5, **kwargs)
 
     info("*** CONFIGURANDO MOVILIDAD\n")
     net.isReplaying = True
@@ -118,11 +122,11 @@ def generar_movilidad(sta, file_):
     sta.time = []
     altura = 125
     pasos = 10
-    espera = 60
-    
+    espera = 180
+
     # Posición inicial (fuera de cobertura)
     pos = (150, altura, 0)
-    tim = espera*2
+    tim = espera
     sta.position = pos
     sta.p.append(pos)
     sta.time.append(tim)
@@ -139,8 +143,20 @@ def generar_movilidad(sta, file_):
     sta.p.append((350, altura, 0))
     sta.time.append(tim)
 
+    # Moverse hasta conectar solo con sta6
+    for x in range(350, 600, pasos):  # Movimiento en pasos de 10
+        pos = (x, altura, 0)
+        tim += 1  # Un segundo por cada paso
+        sta.p.append(pos)
+        sta.time.append(tim)
+
+    # Esperar quieto conectado solo a sta6
+    tim += espera
+    sta.p.append((600, altura, 0))
+    sta.time.append(tim)
+
     # Moverse hasta conectar solo con sta10
-    for x in range(350, 850, pasos):  # Movimiento en pasos de 10
+    for x in range(600, 800, pasos):  # Movimiento en pasos de 10
         pos = (x, altura, 0)
         tim += 1  # Un segundo por cada paso
         sta.p.append(pos)
@@ -148,30 +164,54 @@ def generar_movilidad(sta, file_):
 
     # Esperar quieto conectado solo a sta10
     tim += espera
-    sta.p.append((850, altura, 0))
+    sta.p.append((800, altura, 0))
     sta.time.append(tim)
 
-    # Moverse hasta conectar solo con sta20
-    for x in range(850, 1350, pasos):  # Movimiento en pasos de 10
+    # Moverse hasta conectar solo con sta14
+    for x in range(800, 1000, pasos):  # Movimiento en pasos de 10
         pos = (x, altura, 0)
         tim += 1  # Un segundo por cada paso
         sta.p.append(pos)
         sta.time.append(tim)
 
-    # Esperar quieto conectado solo a sta20
+    # Esperar quieto conectado solo a sta14
     tim += espera
-    sta.p.append((1350, altura, 0))
+    sta.p.append((1000, altura, 0))
     sta.time.append(tim)
 
-    # Continuar el movimiento hasta salir del área (más allá de sta20)
-    for x in range(1350, 1550, pasos):  # Movimiento en pasos de 10
+    # Moverse hasta conectar solo con sta18
+    for x in range(1000, 1200, pasos):  # Movimiento en pasos de 10
+        pos = (x, altura, 0)
+        tim += 1  # Un segundo por cada paso
+        sta.p.append(pos)
+        sta.time.append(tim)
+
+    # Esperar quieto conectado solo a sta18
+    tim += espera
+    sta.p.append((1200, altura, 0))
+    sta.time.append(tim)
+
+    # Moverse hasta conectar solo con sta22
+    for x in range(1200, 1450, pasos):  # Movimiento en pasos de 10
+        pos = (x, altura, 0)
+        tim += 1  # Un segundo por cada paso
+        sta.p.append(pos)
+        sta.time.append(tim)
+
+    # Esperar quieto conectado solo a sta22
+    tim += espera
+    sta.p.append((1450, altura, 0))
+    sta.time.append(tim)
+
+    # Continuar el movimiento hasta salir del área (más allá de sta22)
+    for x in range(1450, 1650, pasos):  # Movimiento en pasos de 10
         pos = (x, altura, 0)
         tim += 1  # Un segundo por cada paso
         sta.p.append(pos)
         sta.time.append(tim)
 
     # Permanecer en la última posición
-    sta.p.append((1550, altura, 0))
+    sta.p.append((1650, altura, 0))
     sta.time.append(tim)
 
     
