@@ -98,9 +98,8 @@ def topology(args):
     generar_movilidad(sta1, '{}movilidad_sta1.dat'.format(path))
 
 
-    if '-p' in args:
-        info("*** INICIANDO INTERFAZ GRÁFICA\n")
-        net.plotGraph(max_x=2000, max_y=400)
+    info("*** INICIANDO INTERFAZ GRÁFICA\n")
+    net.plotGraph(max_x=2000, max_y=400)
 
 
     info("*** CONSTRUYENDO RED\n")
