@@ -10,13 +10,15 @@ fi
 DESTINO="$1"  # Usa el primer parámetro como destino
 
 echo "Intentando hacer ping a $DESTINO..."
+contador=0  # Inicializa el contador
 
 while true; do
     ping -c 1 $DESTINO > /dev/null 2>&1
     if [ $? -eq 0 ]; then
-        echo "Ping exitoso a $DESTINO"
-        exit 0  # Termina el script con éxito
+        echo "Ping $((contador += 1)) exitoso a $DESTINO"
+        sleep 1
     else
-        echo "No hay ruta disponible a $DESTINO. Reintentando..."
+        echo "No hay ruta disponible para el ping $((contador += 1)) a $DESTINO. Reintentando..."
+        sleep 1
     fi
 done
