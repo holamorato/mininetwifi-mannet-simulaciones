@@ -99,7 +99,7 @@ def topology(args):
 
 
     info("*** INICIANDO INTERFAZ GRÁFICA\n")
-    net.plotGraph(max_x=2000, max_y=400)
+    net.plotGraph(max_x=1750, max_y=400)
 
 
     info("*** CONSTRUYENDO RED\n")
