@@ -131,7 +131,7 @@ def generar_movilidad(sta, file_):
     sta.time.append(tim)
 
     # TRANSITO - Hacia sta2
-    for x in range(150, 350, pasos):  # Movimiento en pasos de 10
+    for x in range(150, 400, pasos):  # Movimiento en pasos de 10
         pos = (x, altura, 0)
         tim += 1  # Un segundo por cada paso
         sta.p.append(pos)
@@ -139,11 +139,11 @@ def generar_movilidad(sta, file_):
 
     # PARADA - Junto a sta2
     tim += espera
-    sta.p.append((350, altura, 0))
+    sta.p.append((400, altura, 0))
     sta.time.append(tim)
 
     # TRANSITO - Hacia sta6
-    for x in range(350, 600, pasos):  # Movimiento en pasos de 10
+    for x in range(400, 600, pasos):  # Movimiento en pasos de 10
         pos = (x, altura, 0)
         tim += 1  # Un segundo por cada paso
         sta.p.append(pos)
@@ -191,7 +191,7 @@ def generar_movilidad(sta, file_):
     sta.time.append(tim)
 
     # TRANSITO - Hacia sta22
-    for x in range(1200, 1450, pasos):  # Movimiento en pasos de 10
+    for x in range(1200, 1400, pasos):  # Movimiento en pasos de 10
         pos = (x, altura, 0)
         tim += 1  # Un segundo por cada paso
         sta.p.append(pos)
@@ -199,11 +199,11 @@ def generar_movilidad(sta, file_):
 
     # PARADA - Junto a sta22
     tim += espera
-    sta.p.append((1450, altura, 0))
+    sta.p.append((1400, altura, 0))
     sta.time.append(tim)
 
     # TRANSITO - Salir del área (más allá de sta22)
-    for x in range(1450, 1650, pasos):  # Movimiento en pasos de 10
+    for x in range(1400, 1650, pasos):  # Movimiento en pasos de 10
         pos = (x, altura, 0)
         tim += 1  # Un segundo por cada paso
         sta.p.append(pos)
