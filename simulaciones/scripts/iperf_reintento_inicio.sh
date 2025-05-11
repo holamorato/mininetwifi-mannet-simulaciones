@@ -13,15 +13,11 @@ echo "Intentando conectar con iPerf3 al servidor $DESTINO..."
 
 # Reintenta hasta que el primer intento de conexión sea exitoso
 while true; do
-    iperf3 -c $DESTINO -t 1 > /dev/null 2>&1
+    iperf3 -c $DESTINO -t 9999999999999999999
     if [ $? -eq 0 ]; then
-        echo "Conexión exitosa con iPerf3 al servidor $DESTINO. Dejando iPerf3 corriendo..."
+        echo "iPerf3 ha concluido correctamente al conectarse al servidor $DESTINO."
         break
     else
-        echo "No se pudo conectar con iPerf3 al servidor $DESTINO. Reintentando..."
         sleep 1
     fi
 done
-
-# Ejecuta iPerf3 de forma continua
-iperf3 -c $DESTINO

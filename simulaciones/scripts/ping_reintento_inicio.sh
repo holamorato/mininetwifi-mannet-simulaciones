@@ -13,12 +13,11 @@ echo "Intentando hacer ping a $DESTINO..."
 
 # Reintenta hasta que el primer ping sea exitoso
 while true; do
-    ping -c 1 $DESTINO > /dev/null 2>&1
+    ping $DESTINO
     if [ $? -eq 0 ]; then
-        echo "Primer ping exitoso a $DESTINO. El script ha hecho su trabajo."
+        echo "Ping exitoso a $DESTINO ha concluido."
         break
     else
-        echo "No hay ruta disponible para el ping a $DESTINO. Reintentando..."
         sleep 1
     fi
 done
