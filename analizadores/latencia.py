@@ -53,9 +53,10 @@ def plot_convergence(convergence_data, protocolo="batmand"):
     plt.savefig(output_file, dpi=300, bbox_inches='tight')
     print(f"Gráfica guardada como: {output_file}")
 
-def analyze_latency(pcap_file, src_node="10.0.0.1", dst_node="10.0.0.2"):
+def analyze_latency(pcap_file, src_node="10.0.0.1", dst_node="10.0.0.12"):
     latency_data = {}
     results = []
+    start_time = None  # Tiempo inicial de la simulación
 
     with PcapNgReader(pcap_file) as pcap:
         for pkt in pcap:
@@ -64,15 +65,22 @@ def analyze_latency(pcap_file, src_node="10.0.0.1", dst_node="10.0.0.2"):
                 icmp = pkt[ICMP]
                 timestamp = float(pkt.time)
 
+                # Establecer el tiempo inicial si no se ha definido
+                if start_time is None:
+                    start_time = timestamp
+
+                # Ajustar el timestamp para que sea relativo al inicio
+                relative_time = timestamp - start_time
+
                 # Identificar Echo Request
                 if ip.src == src_node and ip.dst == dst_node and icmp.type == 8:  # ICMP Echo Request
-                    latency_data[icmp.id] = timestamp
+                    latency_data[icmp.id] = relative_time
 
                 # Identificar Echo Reply
                 elif ip.src == dst_node and ip.dst == src_node and icmp.type == 0:  # ICMP Echo Reply
                     if icmp.id in latency_data:
-                        latency = timestamp - latency_data.pop(icmp.id)
-                        results.append((timestamp, latency))
+                        latency = relative_time - latency_data.pop(icmp.id)
+                        results.append((relative_time, latency))
                         print(f"[DEBUG] Latencia ICMP: {latency:.2f}s")
 
     return results
@@ -96,7 +104,7 @@ def plot_latency(latency_data, protocolo="batmand"):
 
     # Crear gráfica
     plt.figure(figsize=(15, 6))
-    plt.plot(times, latencies, marker='o', linestyle='-', color='b', label='Latencia')
+    plt.bar(times, latencies, width=0.8, align='center', color='b', label='Latencia')
     plt.title('Latencia ICMP (Ping)')
     plt.xlabel('Tiempo de simulación (segundos)')
     plt.ylabel('Latencia (segundos)')
