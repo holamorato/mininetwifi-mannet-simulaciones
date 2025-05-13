@@ -4,10 +4,12 @@ import matplotlib.pyplot as plt
 from scapy.all import *
 from scapy.layers.inet import ICMP
 import os
+import matplotlib.ticker as ticker
 
 def analyze_convergence(pcap_file, mobile_node="10.0.0.1"):
     convergence_data = []
     last_reply_time = None
+    start_time = None  # Tiempo inicial de la simulación
 
     with PcapNgReader(pcap_file) as pcap:
         for pkt in pcap:
@@ -15,14 +17,21 @@ def analyze_convergence(pcap_file, mobile_node="10.0.0.1"):
                 icmp = pkt[ICMP]
                 timestamp = float(pkt.time)
 
+                # Establecer el tiempo inicial si no se ha definido
+                if start_time is None:
+                    start_time = timestamp
+
+                # Ajustar el timestamp para que sea relativo al inicio
+                relative_time = timestamp - start_time
+
                 # Solo analizar paquetes ICMP Reply provenientes del nodo móvil
                 if pkt[IP].dst == mobile_node and icmp.type == 0:  # ICMP Echo Reply
                     if last_reply_time is not None:
-                        time_between_replies = timestamp - last_reply_time
-                        convergence_data.append((timestamp, time_between_replies))
+                        time_between_replies = relative_time - last_reply_time
+                        convergence_data.append((relative_time, time_between_replies))
                         print(f"[DEBUG] Tiempo entre Echo Reply: {time_between_replies:.2f}s")
 
-                    last_reply_time = timestamp
+                    last_reply_time = relative_time
 
     return convergence_data
 
@@ -46,10 +55,16 @@ def plot_convergence(convergence_data, protocolo="batmand"):
     # Crear gráfica
     plt.figure(figsize=(15, 6))
     plt.bar(times, durations, width=0.8, align='center')
-    plt.title('Tiempo de Convergencia ICMP (Ping)')
+    plt.title('Tiempo de Convergencia de Rutas entre ICMP (Ping)')
     plt.xlabel('Tiempo de simulación (segundos)')
-    plt.ylabel('Tiempo de convergencia (segundos)')
+    plt.ylabel('Tiempo entre Echo Reply (segundos)')
     plt.grid(True, which='both', linestyle='--', linewidth=0.5)
+
+    # Configurar formato de los ejes para evitar notación científica
+    ax = plt.gca()
+    ax.xaxis.set_major_formatter(ticker.FormatStrFormatter('%.2f'))
+    ax.yaxis.set_major_formatter(ticker.FormatStrFormatter('%.2f'))
+
     plt.savefig(output_file, dpi=300, bbox_inches='tight')
     print(f"Gráfica guardada como: {output_file}")
 
