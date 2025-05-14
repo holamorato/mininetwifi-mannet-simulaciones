@@ -58,7 +58,7 @@ def plot_convergence(convergence_data, protocolo="batmand"):
     plt.savefig(output_file, dpi=300, bbox_inches='tight')
     print(f"[INFO] Gráfica de convergencia guardada en: {output_file}")
 
-def analyze_latency(pcap_file, src_node="10.0.0.1", dst_node="10.0.0.2"):
+def analyze_latency(pcap_file, src_node="10.0.0.1", dst_node="10.0.0.12"):
     print(f"[INFO] Analizando latencia en el archivo: {pcap_file}")
     latency_data = {}
     results = []
@@ -171,8 +171,9 @@ def plot_pdr(pdr_data, protocolo="batmand"):
             break
         version += 1
 
-    # Extraer datos para la gráfica
-    times = [entry[0] for entry in pdr_data]
+    # Ajustar el tiempo de simulación a tiempo relativo
+    start_time = pdr_data[0][0] if pdr_data else 0
+    times = [entry[0] - start_time for entry in pdr_data]  # Convertir a tiempo relativo
     pdr_values = [entry[1] for entry in pdr_data]
 
     # Crear gráfica
