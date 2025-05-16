@@ -7,9 +7,7 @@ import os
 
 def analyze_pdr(pcap_file, src_node="10.0.0.1", dst_node="10.0.0.12"):
     print(f"[INFO] Analizando PDR en el archivo: {pcap_file}")
-    request_sequences = set()
-    reply_sequences = set()
-    pdr_data = []
+    packets = []  # Lista para almacenar pares de (tipo, seq, timestamp)
     start_time = None  # Tiempo inicial de la simulación
 
     with PcapNgReader(pcap_file) as pcap:
@@ -26,21 +24,46 @@ def analyze_pdr(pcap_file, src_node="10.0.0.1", dst_node="10.0.0.12"):
                 # Ajustar el timestamp para que sea relativo al inicio
                 relative_time = timestamp - start_time
 
-                # Verificar si es un Echo Request
+                # Registrar Echo Request
                 if ip.src == src_node and ip.dst == dst_node and icmp.type == 8:  # ICMP Echo Request
-                    request_sequences.add(icmp.seq)
+                    packets.append(("request", icmp.seq, relative_time))
 
-                    # Calcular PDR en tiempo real incluso si no hay respuestas
-                    delivered = len(reply_sequences & request_sequences)  # Intersección de secuencias
-                    total_sent = len(request_sequences)
-                    pdr = (delivered / total_sent) * 100 if total_sent > 0 else 0
-                    pdr_data.append((relative_time, pdr))
-
-                # Verificar si es un Echo Reply
+                # Registrar Echo Reply
                 elif ip.src == dst_node and ip.dst == src_node and icmp.type == 0:  # ICMP Echo Reply
-                    reply_sequences.add(icmp.seq)
+                    packets.append(("reply", icmp.seq, relative_time))
 
-    print(f"[INFO] Análisis de PDR completado. Total de datos: {len(pdr_data)}")
+    print(f"[INFO] Registro de paquetes completado. Total de paquetes: {len(packets)}")
+    return calculate_pdr(packets)
+
+def calculate_pdr(packets, interval=2):
+    print(f"[INFO] Calculando PDR en intervalos de {interval} segundos")
+    pdr_data = []
+    current_time = 0
+    request_sequences = set()
+    reply_sequences = set()
+
+    for packet_type, seq, timestamp in packets:
+        # Agregar secuencias según el tipo de paquete
+        if packet_type == "request":
+            request_sequences.add(seq)
+        elif packet_type == "reply":
+            reply_sequences.add(seq)
+
+        # Calcular PDR al final de cada intervalo
+        while timestamp >= current_time + interval:
+            delivered = len(reply_sequences & request_sequences)  # Intersección de secuencias
+            total_sent = len(request_sequences)
+            pdr = (delivered / total_sent) * 100 if total_sent > 0 else 0
+            pdr_data.append((current_time + interval, pdr))
+            current_time += interval
+
+    # Calcular PDR para el último intervalo
+    delivered = len(reply_sequences & request_sequences)
+    total_sent = len(request_sequences)
+    pdr = (delivered / total_sent) * 100 if total_sent > 0 else 0
+    pdr_data.append((current_time + interval, pdr))
+
+    print(f"[INFO] Cálculo de PDR completado. Total de intervalos: {len(pdr_data)}")
     return pdr_data
 
 def plot_pdr(pdr_data, protocolo="batmand"):
@@ -63,7 +86,7 @@ def plot_pdr(pdr_data, protocolo="batmand"):
 
     # Crear gráfica
     plt.figure(figsize=(15, 6))
-    plt.plot(times, pdr_values, linestyle='-', color='g', label='PDR (%)')
+    plt.scatter(times, pdr_values, color='g', label='PDR (%)', s=10)  # Gráfico de puntos con tamaño reducido
     plt.title('Packet Delivery Ratio (PDR)')
     plt.xlabel('Tiempo de simulación (segundos)')
     plt.ylabel('PDR (%)')
