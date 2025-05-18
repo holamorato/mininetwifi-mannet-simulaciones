@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from scapy.all import *
 from scapy.layers.inet import ICMP
 import os
+from collections import deque
 
 def analyze_pdr(pcap_file, src_node="10.0.0.1", dst_node="10.0.0.12"):
     print(f"[INFO] Analizando PDR en el archivo: {pcap_file}")
@@ -35,35 +36,33 @@ def analyze_pdr(pcap_file, src_node="10.0.0.1", dst_node="10.0.0.12"):
     print(f"[INFO] Registro de paquetes completado. Total de paquetes: {len(packets)}")
     return calculate_pdr(packets)
 
-def calculate_pdr(packets, interval=2):
-    print(f"[INFO] Calculando PDR en intervalos de {interval} segundos")
+def calculate_pdr(packets, observation_window=10):  # Ventana de observación de 8 segundos
+    print(f"[INFO] Calculando PDR con ventana de observación de {observation_window} segundos")
     pdr_data = []
-    current_time = 0
-    request_sequences = set()
-    reply_sequences = set()
+    request_sequences = deque()  # Usar deque para manejar solicitudes en la ventana
+    reply_sequences = deque()
+    start_time = 0
 
     for packet_type, seq, timestamp in packets:
-        # Agregar secuencias según el tipo de paquete
+        # Eliminar paquetes fuera de la ventana de observación
+        while request_sequences and request_sequences[0][1] < timestamp - observation_window:
+            request_sequences.popleft()
+        while reply_sequences and reply_sequences[0][1] < timestamp - observation_window:
+            reply_sequences.popleft()
+
+        # Agregar el paquete actual a la ventana
         if packet_type == "request":
-            request_sequences.add(seq)
+            request_sequences.append((seq, timestamp))
         elif packet_type == "reply":
-            reply_sequences.add(seq)
+            reply_sequences.append((seq, timestamp))
 
-        # Calcular PDR al final de cada intervalo
-        while timestamp >= current_time + interval:
-            delivered = len(reply_sequences & request_sequences)  # Intersección de secuencias
-            total_sent = len(request_sequences)
-            pdr = (delivered / total_sent) * 100 if total_sent > 0 else 0
-            pdr_data.append((current_time + interval, pdr))
-            current_time += interval
+        # Calcular PDR en el momento actual
+        delivered = len(set(seq for seq, _ in reply_sequences) & set(seq for seq, _ in request_sequences))
+        total_sent = len(request_sequences)
+        pdr = (delivered / total_sent) * 100 if total_sent > 0 else 0
+        pdr_data.append((timestamp, pdr))
 
-    # Calcular PDR para el último intervalo
-    delivered = len(reply_sequences & request_sequences)
-    total_sent = len(request_sequences)
-    pdr = (delivered / total_sent) * 100 if total_sent > 0 else 0
-    pdr_data.append((current_time + interval, pdr))
-
-    print(f"[INFO] Cálculo de PDR completado. Total de intervalos: {len(pdr_data)}")
+    print(f"[INFO] Cálculo de PDR completado. Total de puntos: {len(pdr_data)}")
     return pdr_data
 
 def plot_pdr(pdr_data, protocolo="batmand"):
@@ -86,7 +85,8 @@ def plot_pdr(pdr_data, protocolo="batmand"):
 
     # Crear gráfica
     plt.figure(figsize=(15, 6))
-    plt.scatter(times, pdr_values, color='g', label='PDR (%)', s=10)  # Gráfico de puntos con tamaño reducido
+    plt.plot(times, pdr_values, linestyle='-', color='g', label='PDR (%)')  # Conectar puntos con líneas
+    plt.scatter(times, pdr_values, color='g', s=10)  # Añadir puntos sobre las líneas
     plt.title('Packet Delivery Ratio (PDR)')
     plt.xlabel('Tiempo de simulación (segundos)')
     plt.ylabel('PDR (%)')
