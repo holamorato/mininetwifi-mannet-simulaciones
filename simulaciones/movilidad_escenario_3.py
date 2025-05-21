@@ -39,38 +39,38 @@ def topology(args):
 
     info("*** CONFIGURACION DE TOPOLOGIA\n")
     info("*** Añadiendo nodos a la red\n")
-    sta1 = net.addStation('sta1', mac='02:00:00:00:00:01', ip='10.0.0.1', position='0,125,0',   ipv6='fe80::1',  privateDirs=['/var/run','/var/log'], **kwargs)
-    sta2 = net.addStation('sta2', mac='02:00:00:00:00:02', ip='10.0.0.2', position='250,100,0', ipv6='fe80::2',  privateDirs=['/var/run','/var/log'], **kwargs)
-    sta3 = net.addStation('sta3', mac='02:00:00:00:00:03', ip='10.0.0.3', position='250,150,0', ipv6='fe80::3', privateDirs=['/var/run','/var/log'], **kwargs)
-    sta4 = net.addStation('sta4', mac='02:00:00:00:00:04', ip='10.0.0.4', position='250,200,0', ipv6='fe80::4', privateDirs=['/var/run','/var/log'], **kwargs)
-    sta5 = net.addStation('sta5', mac='02:00:00:00:00:05', ip='10.0.0.5', position='300,100,0', ipv6='fe80::5', privateDirs=['/var/run','/var/log'], **kwargs)
-    sta6 = net.addStation('sta6', mac='02:00:00:00:00:06', ip='10.0.0.6', position='300,150,0', ipv6='fe80::6', privateDirs=['/var/run','/var/log'], **kwargs)
-    sta7 = net.addStation('sta7', mac='02:00:00:00:00:07', ip='10.0.0.7', position='300,200,0', ipv6='fe80::7', privateDirs=['/var/run','/var/log'], **kwargs)
-    sta8 = net.addStation('sta8', mac='02:00:00:00:00:08', ip='10.0.0.8', position='350,100,0', ipv6='fe80::8', privateDirs=['/var/run','/var/log'], **kwargs)
-    sta9 = net.addStation('sta9', mac='02:00:00:00:00:09', ip='10.0.0.9', position='350,150,0', ipv6='fe80::9', privateDirs=['/var/run','/var/log'], **kwargs)
-    sta10 = net.addStation('sta10', mac='02:00:00:00:00:0A', ip='10.0.0.10', position='350,200,0', ipv6='fe80::10', privateDirs=['/var/run','/var/log'], **kwargs)
+    sta1 = net.addStation('sta1', mac='02:00:00:00:00:01', ip='10.0.0.1', position='-100,125,0', ipv6='fe80::1', privateDirs=['/var/run','/var/log'], **kwargs)
+    sta2 = net.addStation('sta2', mac='02:00:00:00:00:02', ip='10.0.0.2', position='150,100,0', ipv6='fe80::2', privateDirs=['/var/run','/var/log'], **kwargs)
+    sta3 = net.addStation('sta3', mac='02:00:00:00:00:03', ip='10.0.0.3', position='150,150,0', ipv6='fe80::3', privateDirs=['/var/run','/var/log'], **kwargs)
+    sta4 = net.addStation('sta4', mac='02:00:00:00:00:04', ip='10.0.0.4', position='150,200,0', ipv6='fe80::4', privateDirs=['/var/run','/var/log'], **kwargs)
+    sta5 = net.addStation('sta5', mac='02:00:00:00:00:05', ip='10.0.0.5', position='200,100,0', ipv6='fe80::5', privateDirs=['/var/run','/var/log'], **kwargs)
+    sta6 = net.addStation('sta6', mac='02:00:00:00:00:06', ip='10.0.0.6', position='200,150,0', ipv6='fe80::6', privateDirs=['/var/run','/var/log'], **kwargs)
+    sta7 = net.addStation('sta7', mac='02:00:00:00:00:07', ip='10.0.0.7', position='200,200,0', ipv6='fe80::7', privateDirs=['/var/run','/var/log'], **kwargs)
+    sta8 = net.addStation('sta8', mac='02:00:00:00:00:08', ip='10.0.0.8', position='250,100,0', ipv6='fe80::8', privateDirs=['/var/run','/var/log'], **kwargs)
+    sta9 = net.addStation('sta9', mac='02:00:00:00:00:09', ip='10.0.0.9', position='250,150,0', ipv6='fe80::9', privateDirs=['/var/run','/var/log'], **kwargs)
+    sta10 = net.addStation('sta10', mac='02:00:00:00:00:0A', ip='10.0.0.10', position='250,200,0', ipv6='fe80::10', privateDirs=['/var/run','/var/log'], **kwargs)
     
     # Duplicar nodos desplazados 25 puntos a la derecha con nombres consecutivos
-    sta11 = net.addStation('sta11', mac='02:00:00:00:00:0B', ip='10.0.0.11', position='275,100,0', ipv6='fe80::11', privateDirs=['/var/run','/var/log'], **kwargs)
-    sta12 = net.addStation('sta12', mac='02:00:00:00:00:0C', ip='10.0.0.12', position='275,150,0', ipv6='fe80::12', privateDirs=['/var/run','/var/log'], **kwargs)
-    sta13 = net.addStation('sta13', mac='02:00:00:00:00:0D', ip='10.0.0.13', position='275,200,0', ipv6='fe80::13', privateDirs=['/var/run','/var/log'], **kwargs)
-    sta14 = net.addStation('sta14', mac='02:00:00:00:00:0E', ip='10.0.0.14', position='325,100,0', ipv6='fe80::14', privateDirs=['/var/run','/var/log'], **kwargs)
-    sta15 = net.addStation('sta15', mac='02:00:00:00:00:0F', ip='10.0.0.15', position='325,150,0', ipv6='fe80::15', privateDirs=['/var/run','/var/log'], **kwargs)
-    sta16 = net.addStation('sta16', mac='02:00:00:00:00:10', ip='10.0.0.16', position='325,200,0', ipv6='fe80::16', privateDirs=['/var/run','/var/log'], **kwargs)
-    sta17 = net.addStation('sta17', mac='02:00:00:00:00:11', ip='10.0.0.17', position='375,100,0', ipv6='fe80::17', privateDirs=['/var/run','/var/log'], **kwargs)
-    sta18 = net.addStation('sta18', mac='02:00:00:00:00:12', ip='10.0.0.18', position='375,150,0', ipv6='fe80::18', privateDirs=['/var/run','/var/log'], **kwargs)
-    sta19 = net.addStation('sta19', mac='02:00:00:00:00:13', ip='10.0.0.19', position='375,200,0', ipv6='fe80::19', privateDirs=['/var/run','/var/log'], **kwargs)
+    sta11 = net.addStation('sta11', mac='02:00:00:00:00:0B', ip='10.0.0.11', position='175,100,0', ipv6='fe80::11', privateDirs=['/var/run','/var/log'], **kwargs)
+    sta12 = net.addStation('sta12', mac='02:00:00:00:00:0C', ip='10.0.0.12', position='175,150,0', ipv6='fe80::12', privateDirs=['/var/run','/var/log'], **kwargs)
+    sta13 = net.addStation('sta13', mac='02:00:00:00:00:0D', ip='10.0.0.13', position='175,200,0', ipv6='fe80::13', privateDirs=['/var/run','/var/log'], **kwargs)
+    sta14 = net.addStation('sta14', mac='02:00:00:00:00:0E', ip='10.0.0.14', position='225,100,0', ipv6='fe80::14', privateDirs=['/var/run','/var/log'], **kwargs)
+    sta15 = net.addStation('sta15', mac='02:00:00:00:00:0F', ip='10.0.0.15', position='225,150,0', ipv6='fe80::15', privateDirs=['/var/run','/var/log'], **kwargs)
+    sta16 = net.addStation('sta16', mac='02:00:00:00:00:10', ip='10.0.0.16', position='225,200,0', ipv6='fe80::16', privateDirs=['/var/run','/var/log'], **kwargs)
+    sta17 = net.addStation('sta17', mac='02:00:00:00:00:11', ip='10.0.0.17', position='275,100,0', ipv6='fe80::17', privateDirs=['/var/run','/var/log'], **kwargs)
+    sta18 = net.addStation('sta18', mac='02:00:00:00:00:12', ip='10.0.0.18', position='275,150,0', ipv6='fe80::18', privateDirs=['/var/run','/var/log'], **kwargs)
+    sta19 = net.addStation('sta19', mac='02:00:00:00:00:13', ip='10.0.0.19', position='275,200,0', ipv6='fe80::19', privateDirs=['/var/run','/var/log'], **kwargs)
     
     # Crear un array de 3x3 desplazado 50 puntos a la derecha de sta17, sta18 y sta19
-    sta20 = net.addStation('sta20', mac='02:00:00:00:00:14', ip='10.0.0.20', position='425,100,0', ipv6='fe80::20', privateDirs=['/var/run','/var/log'], **kwargs)
-    sta21 = net.addStation('sta21', mac='02:00:00:00:00:15', ip='10.0.0.21', position='425,150,0', ipv6='fe80::21', privateDirs=['/var/run','/var/log'], **kwargs)
-    sta22 = net.addStation('sta22', mac='02:00:00:00:00:16', ip='10.0.0.22', position='425,200,0', ipv6='fe80::22', privateDirs=['/var/run','/var/log'], **kwargs)
-    sta23 = net.addStation('sta23', mac='02:00:00:00:00:17', ip='10.0.0.23', position='475,100,0', ipv6='fe80::23', privateDirs=['/var/run','/var/log'], **kwargs)
-    sta24 = net.addStation('sta24', mac='02:00:00:00:00:18', ip='10.0.0.24', position='475,150,0', ipv6='fe80::24', privateDirs=['/var/run','/var/log'], **kwargs)
-    sta25 = net.addStation('sta25', mac='02:00:00:00:00:19', ip='10.0.0.25', position='475,200,0', ipv6='fe80::25', privateDirs=['/var/run','/var/log'], **kwargs)
-    sta26 = net.addStation('sta26', mac='02:00:00:00:00:1A', ip='10.0.0.26', position='525,100,0', ipv6='fe80::26', privateDirs=['/var/run','/var/log'], **kwargs)
-    sta27 = net.addStation('sta27', mac='02:00:00:00:00:1B', ip='10.0.0.27', position='525,150,0', ipv6='fe80::27', privateDirs=['/var/run','/var/log'], **kwargs)
-    sta28 = net.addStation('sta28', mac='02:00:00:00:00:1C', ip='10.0.0.28', position='525,200,0', ipv6='fe80::28', privateDirs=['/var/run','/var/log'], **kwargs)
+    sta20 = net.addStation('sta20', mac='02:00:00:00:00:14', ip='10.0.0.20', position='325,100,0', ipv6='fe80::20', privateDirs=['/var/run','/var/log'], **kwargs)
+    sta21 = net.addStation('sta21', mac='02:00:00:00:00:15', ip='10.0.0.21', position='325,150,0', ipv6='fe80::21', privateDirs=['/var/run','/var/log'], **kwargs)
+    sta22 = net.addStation('sta22', mac='02:00:00:00:00:16', ip='10.0.0.22', position='325,200,0', ipv6='fe80::22', privateDirs=['/var/run','/var/log'], **kwargs)
+    sta23 = net.addStation('sta23', mac='02:00:00:00:00:17', ip='10.0.0.23', position='375,100,0', ipv6='fe80::23', privateDirs=['/var/run','/var/log'], **kwargs)
+    sta24 = net.addStation('sta24', mac='02:00:00:00:00:18', ip='10.0.0.24', position='375,150,0', ipv6='fe80::24', privateDirs=['/var/run','/var/log'], **kwargs)
+    sta25 = net.addStation('sta25', mac='02:00:00:00:00:19', ip='10.0.0.25', position='375,200,0', ipv6='fe80::25', privateDirs=['/var/run','/var/log'], **kwargs)
+    sta26 = net.addStation('sta26', mac='02:00:00:00:00:1A', ip='10.0.0.26', position='425,100,0', ipv6='fe80::26', privateDirs=['/var/run','/var/log'], **kwargs)
+    sta27 = net.addStation('sta27', mac='02:00:00:00:00:1B', ip='10.0.0.27', position='425,150,0', ipv6='fe80::27', privateDirs=['/var/run','/var/log'], **kwargs)
+    sta28 = net.addStation('sta28', mac='02:00:00:00:00:1C', ip='10.0.0.28', position='425,200,0', ipv6='fe80::28', privateDirs=['/var/run','/var/log'], **kwargs)
     
     info("*** Configurando modelo de propagación\n")
     net.setPropagationModel(model="logDistance", exp=4)
@@ -115,7 +115,7 @@ def topology(args):
 
 
     info("*** INICIANDO INTERFAZ GRÁFICA\n")
-    net.plotGraph(max_x=800, max_y=350)
+    net.plotGraph(max_x=600, max_y=300)
 
 
     info("*** CONSTRUYENDO RED\n")
@@ -135,32 +135,35 @@ def topology(args):
 def generar_movilidad(sta, file_):
     sta.p = []
     sta.time = []
+    wait_time = 100
 
-    # Posición inicial (390, 240, 0) durante 30 segundos
-    pos = (390, 240, 0)  # 10 puntos más cerca de sta10 en cada eje
-    tim = 30
+    # Posición inicial (punto intermedio entre sta10 y sta16)
+    pos = (236, 200, 0)  # Punto intermedio entre sta10 y sta16 desplazado 100 puntos a la izquierda
+    tim = wait_time
     sta.position = pos
     sta.p.append(pos)
     sta.time.append(tim)
 
-    # Parada entre sta2 y sta3 durante 60 segundos
-    pos = (250, 125, 0)  # Punto intermedio entre sta2 y sta3
-    tim += 60
+    # Parada entre sta12 y sta11
+    pos = (175, 125, 0)  # Punto intermedio entre sta12 y sta11 desplazado 100 puntos a la izquierda
+    tim += wait_time
     sta.p.append(pos)
     sta.time.append(tim)
 
-    # Parada entre sta21 y sta22 durante 60 segundos
-    pos = (650, 175, 0)  # Punto intermedio entre sta21 y sta22
-    tim += 60
+    # Parada entre sta24 y sta23
+    pos = (375, 125, 0)  # Punto intermedio entre sta24 y sta23 desplazado 100 puntos a la izquierda
+    tim += wait_time
     sta.p.append(pos)
     sta.time.append(tim)
 
-    # Volver indefinidamente a la posición inicial
-    pos = (390, 240, 0)
-    tim += 60
+    # Volver a la posición inicial
+    pos = (236, 200, 0)
+    tim += wait_time
     sta.p.append(pos)
     sta.time.append(tim)
-    sta.p.append(pos)  # Mantener indefinidamente
+
+    # Mantener indefinidamente en la posición inicial
+    sta.p.append(pos)
     sta.time.append(float('inf'))
     
 
