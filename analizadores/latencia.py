@@ -116,9 +116,10 @@ def plot_latency(latency_data, protocolo="batmand"):
 def main():
     parser = argparse.ArgumentParser(description="Analizador de latencia ICMP")
     parser.add_argument("--archivo", required=True, help="Archivo .pcapng de captura")
+    parser.add_argument("--dst_node", required=True, help="Dirección IP del nodo destino")
     args = parser.parse_args()
 
-    latency_data = analyze_latency(args.archivo)
+    latency_data = analyze_latency(args.archivo, dst_node=args.dst_node)
     
     if latency_data:
         plot_latency(latency_data)
