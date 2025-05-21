@@ -13,7 +13,7 @@ echo "Intentando conectar con iPerf3 al servidor $DESTINO..."
 
 # Reintenta hasta que el primer intento de conexión sea exitoso
 while true; do
-    iperf -u -c $DESTINO -t 9999999999999999999
+    iperf3 -u -c $DESTINO -t 9999999999999999999
     if [ $? -eq 0 ]; then
         echo "iPerf3 ha concluido correctamente al conectarse al servidor $DESTINO."
         break
