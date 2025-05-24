@@ -85,7 +85,7 @@ def analyze_latency(pcap_file, src_node="10.0.0.1", dst_node="10.0.0.12"):
 
     return results
 
-def plot_latency(latency_data, protocolo="batmand"):
+def plot_latency(latency_data, protocolo="batmand", escenario=0):
     # Crear directorio si no existe
     output_dir = f"./graficas/latencia/{protocolo}/"
     os.makedirs(output_dir, exist_ok=True)
@@ -93,7 +93,7 @@ def plot_latency(latency_data, protocolo="batmand"):
     # Generar nombre de archivo único
     version = 1
     while True:
-        output_file = f"{output_dir}latencia {protocolo} v{version}.png"
+        output_file = f"{output_dir}latencia {protocolo} E{escenario} v{version}.png"
         if not os.path.exists(output_file):
             break
         version += 1
@@ -117,12 +117,13 @@ def main():
     parser = argparse.ArgumentParser(description="Analizador de latencia ICMP")
     parser.add_argument("--archivo", required=True, help="Archivo .pcapng de captura")
     parser.add_argument("--dst_node", required=True, help="Dirección IP del nodo destino")
+    parser.add_argument("--escenario", type=int, required=True, help="Número del escenario")
     args = parser.parse_args()
 
     latency_data = analyze_latency(args.archivo, dst_node=args.dst_node)
     
     if latency_data:
-        plot_latency(latency_data)
+        plot_latency(latency_data, escenario=args.escenario)
     else:
         print("No se detectaron eventos de latencia")
 
