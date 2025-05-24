@@ -35,7 +35,7 @@ def analyze_convergence(pcap_file, mobile_node="10.0.0.1"):
 
     return convergence_data
 
-def plot_convergence(convergence_data, protocolo="batmand"):
+def plot_convergence(convergence_data, protocolo="batmand", escenario=0):
     # Crear directorio si no existe
     output_dir = f"./graficas/convergencia/{protocolo}/"
     os.makedirs(output_dir, exist_ok=True)
@@ -43,7 +43,7 @@ def plot_convergence(convergence_data, protocolo="batmand"):
     # Generar nombre de archivo único
     version = 1
     while True:
-        output_file = f"{output_dir}convergencia {protocolo} v{version}.png"
+        output_file = f"{output_dir}convergencia {protocolo} E{escenario} V{version}.png"
         if not os.path.exists(output_file):
             break
         version += 1
@@ -71,12 +71,13 @@ def plot_convergence(convergence_data, protocolo="batmand"):
 def main():
     parser = argparse.ArgumentParser(description="Analizador de convergencia ICMP")
     parser.add_argument("--archivo", required=True, help="Archivo .pcapng de captura")
+    parser.add_argument("--escenario", type=int, required=True, help="Número del escenario")
     args = parser.parse_args()
 
     convergence_data = analyze_convergence(args.archivo)
     
     if convergence_data:
-        plot_convergence(convergence_data)
+        plot_convergence(convergence_data, escenario=args.escenario)
     else:
         print("No se detectaron eventos de convergencia")
 
