@@ -65,8 +65,8 @@ def calculate_pdr(packets, observation_window=10):  # Ventana de observación de
     print(f"[INFO] Cálculo de PDR completado. Total de puntos: {len(pdr_data)}")
     return pdr_data
 
-def plot_pdr(pdr_data, protocolo="batmand"):
-    print(f"[INFO] Generando gráfica de PDR para el protocolo: {protocolo}")
+def plot_pdr(pdr_data, protocolo="batmand", escenario=0):
+    print(f"[INFO] Generando gráfica de PDR para el protocolo: {protocolo}, escenario: {escenario}")
     # Crear directorio si no existe
     output_dir = f"./graficas/pdr/{protocolo}/"
     os.makedirs(output_dir, exist_ok=True)
@@ -74,7 +74,7 @@ def plot_pdr(pdr_data, protocolo="batmand"):
     # Generar nombre de archivo único
     version = 1
     while True:
-        output_file = f"{output_dir}pdr {protocolo} v{version}.png"
+        output_file = f"{output_dir}pdr {protocolo} E{escenario} v{version}.png"
         if not os.path.exists(output_file):
             break
         version += 1
@@ -98,12 +98,13 @@ def plot_pdr(pdr_data, protocolo="batmand"):
 def main():
     parser = argparse.ArgumentParser(description="Analizador de Packet Delivery Ratio (PDR)")
     parser.add_argument("--archivo", required=True, help="Archivo .pcapng de captura")
+    parser.add_argument("--escenario", type=int, required=True, help="Número del escenario")
     args = parser.parse_args()
 
     pdr_data = analyze_pdr(args.archivo)
     
     if pdr_data:
-        plot_pdr(pdr_data)
+        plot_pdr(pdr_data, escenario=args.escenario)
     else:
         print("No se detectaron eventos de PDR")
 
