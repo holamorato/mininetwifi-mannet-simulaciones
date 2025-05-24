@@ -43,7 +43,7 @@ def plot_convergence(convergence_data, protocolo="batmand", escenario=0):
     # Generar nombre de archivo único
     version = 1
     while True:
-        output_file = f"{output_dir}convergencia {protocolo} E{escenario} V{version}.png"
+        output_file = f"{output_dir}convergencia {protocolo} E{escenario} v{version}.png"
         if not os.path.exists(output_file):
             break
         version += 1
