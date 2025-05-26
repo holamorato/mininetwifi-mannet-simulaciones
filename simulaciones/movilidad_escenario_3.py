@@ -135,29 +135,29 @@ def topology(args):
 def generar_movilidad(sta, file_):
     sta.p = []
     sta.time = []
-    wait_time = 100
+    wait_time = 60
 
-    # Posición inicial (punto intermedio entre sta10 y sta16)
-    pos = (236, 200, 0)  # Punto intermedio entre sta10 y sta16 desplazado 100 puntos a la izquierda
+    # Posición inicial (Encima de sta7)
+    pos = (200, 225, 0)
     tim = wait_time
     sta.position = pos
     sta.p.append(pos)
     sta.time.append(tim)
 
-    # Parada entre sta12 y sta11
-    pos = (175, 125, 0)  # Punto intermedio entre sta12 y sta11 desplazado 100 puntos a la izquierda
+    # Parada entre sta2 y sta3
+    pos = (150, 125, 0)
     tim += wait_time
     sta.p.append(pos)
     sta.time.append(tim)
 
-    # Parada entre sta24 y sta23
-    pos = (375, 125, 0)  # Punto intermedio entre sta24 y sta23 desplazado 100 puntos a la izquierda
+    # Parada entre sta26 y sta27
+    pos = (425, 125, 0)
     tim += wait_time
     sta.p.append(pos)
     sta.time.append(tim)
 
-    # Volver a la posición inicial
-    pos = (236, 200, 0)
+    # Volver a la posición inicial (Encima de sta7)
+    pos = (200, 225, 0)
     tim += wait_time
     sta.p.append(pos)
     sta.time.append(tim)

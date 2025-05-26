@@ -119,29 +119,30 @@ def topology(args):
 def generar_movilidad(sta, file_):
     sta.p = []
     sta.time = []
+    wait_time: 100
 
-    # Posición inicial (390, 240, 0) durante 30 segundos
-    pos = (390, 240, 0)  # 10 puntos más cerca de sta10 en cada eje
-    tim = 30
+    # Posición inicial (390, 240, 0) 
+    pos = (390, 240, 0)
+    tim = wait_time
     sta.position = pos
     sta.p.append(pos)
     sta.time.append(tim)
 
-    # Parada entre sta2 y sta3 durante 60 segundos
-    pos = (250, 125, 0)  # Punto intermedio entre sta2 y sta3
-    tim += 60
+    # Parada entre sta2 y sta3
+    pos = (250, 125, 0)
+    tim += wait_time
     sta.p.append(pos)
     sta.time.append(tim)
 
-    # Parada entre sta21 y sta22 durante 60 segundos
-    pos = (650, 175, 0)  # Punto intermedio entre sta21 y sta22
-    tim += 60
+    # Parada entre sta21 y sta22
+    pos = (650, 175, 0)
+    tim += wait_time
     sta.p.append(pos)
     sta.time.append(tim)
 
     # Volver indefinidamente a la posición inicial
     pos = (390, 240, 0)
-    tim += 60
+    tim += wait_time
     sta.p.append(pos)
     sta.time.append(tim)
     sta.p.append(pos)  # Mantener indefinidamente
