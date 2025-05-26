@@ -99,9 +99,10 @@ def main():
     parser = argparse.ArgumentParser(description="Analizador de Packet Delivery Ratio (PDR)")
     parser.add_argument("--archivo", required=True, help="Archivo .pcapng de captura")
     parser.add_argument("--escenario", type=int, required=True, help="Número del escenario")
+    parser.add_argument("--dst_node", default="10.0.0.12", help="Dirección IP del nodo destino (por defecto: 10.0.0.12)")
     args = parser.parse_args()
 
-    pdr_data = analyze_pdr(args.archivo)
+    pdr_data = analyze_pdr(args.archivo, dst_node=args.dst_node)
     
     if pdr_data:
         plot_pdr(pdr_data, escenario=args.escenario)
