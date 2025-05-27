@@ -36,31 +36,28 @@ def analyze_pdr(pcap_file, src_node="10.0.0.1", dst_node="10.0.0.12"):
     print(f"[INFO] Registro de paquetes completado. Total de paquetes: {len(packets)}")
     return calculate_pdr(packets)
 
-def calculate_pdr(packets, observation_window=10):  # Ventana de observación de 8 segundos
+def calculate_pdr(packets, observation_window=10):
     print(f"[INFO] Calculando PDR con ventana de observación de {observation_window} segundos")
     pdr_data = []
-    request_sequences = deque()  # Usar deque para manejar solicitudes en la ventana
-    reply_sequences = deque()
-    start_time = 0
+    n = len(packets)
+    # Extraer solo los paquetes request y reply con sus timestamps
+    requests = [(seq, t) for typ, seq, t in packets if typ == "request"]
+    replies = [(seq, t) for typ, seq, t in packets if typ == "reply"]
 
-    for packet_type, seq, timestamp in packets:
-        # Eliminar paquetes fuera de la ventana de observación
-        while request_sequences and request_sequences[0][1] < timestamp - observation_window:
-            request_sequences.popleft()
-        while reply_sequences and reply_sequences[0][1] < timestamp - observation_window:
-            reply_sequences.popleft()
+    # Para cada request, buscar replies en la ventana
+    for i, (seq_req, t_req) in enumerate(requests):
+        window_start = t_req
+        window_end = t_req + observation_window
 
-        # Agregar el paquete actual a la ventana
-        if packet_type == "request":
-            request_sequences.append((seq, timestamp))
-        elif packet_type == "reply":
-            reply_sequences.append((seq, timestamp))
+        # Requests en la ventana
+        reqs_in_window = [seq for seq, t in requests if window_start <= t < window_end]
+        # Replies en la ventana
+        reps_in_window = [seq for seq, t in replies if window_start <= t < window_end]
 
-        # Calcular PDR en el momento actual
-        delivered = len(set(seq for seq, _ in reply_sequences) & set(seq for seq, _ in request_sequences))
-        total_sent = len(request_sequences)
+        delivered = sum(1 for seq in reqs_in_window if seq in reps_in_window)
+        total_sent = len(reqs_in_window)
         pdr = (delivered / total_sent) * 100 if total_sent > 0 else 0
-        pdr_data.append((timestamp, pdr))
+        pdr_data.append((t_req, pdr))
 
     print(f"[INFO] Cálculo de PDR completado. Total de puntos: {len(pdr_data)}")
     return pdr_data
