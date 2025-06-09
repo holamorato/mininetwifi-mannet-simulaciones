@@ -119,7 +119,7 @@ def topology(args):
 def generar_movilidad(sta, file_):
     sta.p = []
     sta.time = []
-    wait_time: 100
+    wait_time = 100
 
     # Posición inicial (390, 240, 0) 
     pos = (390, 240, 0)
