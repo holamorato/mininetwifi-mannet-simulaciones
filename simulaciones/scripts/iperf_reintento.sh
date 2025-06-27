@@ -11,11 +11,7 @@ DESTINO="$1"  # Usa el primer parámetro como destino
 
 echo "Intentando conectar con iPerf3 al servidor $DESTINO..."
 
-# Reintenta hasta que el primer intento de conexión sea exitoso
+# Ejecuta en bucle infinito
 while true; do
     iperf -c $DESTINO -t 0
-    if [ $? -eq 0 ]; then
-        echo "iPerf3 ha concluido correctamente al conectarse al servidor $DESTINO."
-        break
-    fi
 done
