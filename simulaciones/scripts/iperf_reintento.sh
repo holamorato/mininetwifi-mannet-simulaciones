@@ -9,7 +9,7 @@ fi
 
 DESTINO="$1"  # Usa el primer parámetro como destino
 
-echo "Intentando conectar con iPerf3 al servidor $DESTINO..."
+echo "Intentando conectar con iPerf al servidor $DESTINO..."
 
 # Ejecuta en bucle infinito
 while true; do
