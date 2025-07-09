@@ -31,7 +31,7 @@ def analyze_latency(pcap_file, src_node="10.0.0.1", dst_node="10.0.0.12"):
                 # Identificar Echo Reply
                 elif ip.src == dst_node and ip.dst == src_node and icmp.type == 0:  # ICMP Echo Reply
                     if icmp.id in latency_data:
-                        latency = relative_time - latency_data.pop(icmp.id)
+                        latency = relative_time - latency_data.pop(icmp.id)/2
                         results.append((relative_time, latency))
                         print(f"[DEBUG] Latencia ICMP: {latency:.2f}s")
 
